@@ -77,5 +77,67 @@ python -m src.main
 - Immessaoudene Malak Ikram - G1
 - Moumani Malek Nourhene - G8
 ---
-## 📄 Report
+## Report
 The final report is located in the /report directory and follows the given guidelines. Each member activity is found undere Appendix B
+---
+# Repository Structure
+```
+ambulance-dispatch/
+│
+├── report/
+│   └── Mini_Project_Report.pdf
+│
+├── data/
+│   ├── raw/
+│   │   └── .gitkeep
+│   └── processed/
+│       └── .gitkeep
+│
+├── src/
+│   ├── __init__.py
+│   │
+│   ├── simulation/
+│   │   ├── __init__.py
+│   │   ├── city_map.py
+│   │   ├── ambulance.py
+│   │   ├── environment.py
+│   │   ├── dispatcher.py
+│   │   └── traffic_model.py
+│   │
+│   ├── algorithms/
+│   │   ├── __init__.py
+│   │   ├── base_algorithm.py
+│   │   ├── greedy_dispatch.py
+│   │   ├── a_star_routing.py
+│   │   ├── dijkstra_routing.py
+│   │   └── reinforcement_learning.py
+│   │
+│   ├── evaluation/
+│   │   ├── __init__.py
+│   │   ├── metrics.py
+│   │   └── performance_tracker.py
+│   │
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── data_loader.py
+│   │   ├── distance.py
+│   │   └── logger.py
+│   │
+│   └── main.py
+│
+├── notebooks/
+│   └── Main_Project.ipynb
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_city_map.py
+│   ├── test_dispatcher.py
+│   ├── test_algorithms.py
+│   └── test_metrics.py
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
