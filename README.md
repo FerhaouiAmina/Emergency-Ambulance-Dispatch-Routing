@@ -1,4 +1,4 @@
-# Emergency-Ambulance-Dispatch-Routing
+# Emergency Ambulance Dispatch Routing
 ## Project Description
 This project implements an AI-based ambulance dispatch simulation.
 The system models:
@@ -50,8 +50,8 @@ Contains The final report of the project
 ## Installation
 Clone the repository:
 ```
-git clone <repository-link>
-cd ambulance-dispatch-ai
+git clone https://github.com/FerhaouiAmina/Emergency-Ambulance-Dispatch-Routing.git
+cd ambulance-dispatch
 ```
 Install dependencies:
 ```
