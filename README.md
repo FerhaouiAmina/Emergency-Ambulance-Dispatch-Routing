@@ -94,62 +94,104 @@ The final report is located in the /report directory and follows the given guide
 ---
 # Repository Structure
 ```
-ambulance-dispatch/
-│
-├── report/
-│   └── Mini_Project_Report.pdf
-│
-├── data/
-│   ├── raw/
-│   │   └── .gitkeep
-│   └── processed/
-│       └── .gitkeep
+ambulance-dispatch-ai/
+├── requirements.txt
+├── .gitignore
+├── notebooks/
+│   ├── main_simulation.ipynb
+│   ├── experiments_comparison.ipynb
+│   └── visualization_dashboard.ipynb
 │
 ├── src/
 │   ├── __init__.py
 │   │
-│   ├── simulation/
-│   │   ├── __init__.py
-│   │   ├── city_map.py
+│   ├── core/
+│   │   ├── graph.py
+│   │   ├── node.py
+│   │   ├── edge.py
 │   │   ├── ambulance.py
-│   │   ├── environment.py
-│   │   ├── dispatcher.py
-│   │   └── traffic_model.py
+│   │   ├── hospital.py
+│   │   ├── emergency.py
+│   │   └── simulation_engine.py
 │   │
 │   ├── algorithms/
-│   │   ├── __init__.py
-│   │   ├── base_algorithm.py
+│   │   ├── astar.py
+│   │   ├── realtime_astar.py
 │   │   ├── greedy_dispatch.py
-│   │   ├── a_star_routing.py
-│   │   ├── dijkstra_routing.py
-│   │   └── reinforcement_learning.py
+│   │   ├── astar_dispatch.py
+│   │   ├── hill_climbing.py
+│   │   └── standby_optimizer.py
+│   │
+│   ├── traffic/
+│   │   ├── traffic_model.py
+│   │   ├── congestion_updates.py
+│   │   └── rush_hour_rules.py
+│   │
+│   ├── simulation/
+│   │   ├── event_queue.py
+│   │   ├── poisson_generator.py
+│   │   ├── surge_scenarios.py
+│   │   └── dispatcher.py
 │   │
 │   ├── evaluation/
-│   │   ├── __init__.py
 │   │   ├── metrics.py
-│   │   └── performance_tracker.py
+│   │   ├── response_time_analysis.py
+│   │   ├── static_vs_dynamic.py
+│   │   └── algorithm_comparison.py
 │   │
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   ├── data_loader.py
-│   │   ├── distance.py
-│   │   └── logger.py
-│   │
-│   └── main.py
+│   └── visualization/
+│       ├── map_animation.py
+│       ├── heatmap.py
+│       ├── histograms.py
+│       └── dashboard.py
 │
-├── notebooks/
-│   └── Main_Project.ipynb
+├── data/
+│   ├── raw/
+│   │   ├── road_nodes.csv
+│   │   ├── road_edges.csv
+│   │   ├── hospitals.csv
+│   │   ├── depots.csv
+│   │   └── historical_emergencies.csv
+│   │
+│   ├── processed/
+│   │   ├── weighted_graph.json
+│   │   ├── emergency_events.csv
+│   │   └── traffic_profiles.json
+│   │
+│   └── generated/
+│       ├── surge_test_events.csv
+│       └── poisson_simulation_events.csv
 │
 ├── tests/
-│   ├── __init__.py
-│   ├── test_city_map.py
-│   ├── test_dispatcher.py
-│   ├── test_algorithms.py
-│   └── test_metrics.py
+│   ├── test_astar.py
+│   ├── test_realtime_astar.py
+│   ├── test_hill_climbing.py
+│   ├── test_dispatch.py
+│   └── test_simulation.py
 │
-├── requirements.txt
-├── README.md
-└── .gitignore
+├── outputs/
+│   ├── figures/
+│   │   ├── response_time_histogram.png
+│   │   ├── traffic_heatmap.png
+│   │   ├── convergence_plot.png
+│   │   └── route_visualization.png
+│   │
+│   ├── logs/
+│   │   ├── simulation_log.txt
+│   │   └── experiment_results.csv
+│   │
+│   └── dashboard_screenshots/
+│
+├── docs/
+│   ├── project_report.pdf
+│   ├── workplan.pdf
+│   ├── algorithm_notes.md
+│   └── references.md
+│
+└── demo/
+│   ├── demo_script.md
+│   └── demo_scenarios.md
+│
+└── README.md
 ```
 
