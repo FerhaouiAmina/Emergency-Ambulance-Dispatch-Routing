@@ -27,15 +27,14 @@ Models the emergency response environment:
 Contains dispatch and routing strategies:
 - Greedy nearest ambulance
 - A* routing
-- Dijkstra routing
-- Reinforcement learning dispatcher
+- Hill climbing
 ### src/evaluation
 Performance measurement:
 - Average response time
 - Maximum delay
 - Utilization rate
 - Comparative analysis
-### src/utils
+### src/core
 Shared utilities:
 - Configuration
 - Distance computation
@@ -98,9 +97,7 @@ ambulance-dispatch-ai/
 ├── requirements.txt
 ├── .gitignore
 ├── notebooks/
-│   ├── main_simulation.ipynb
-│   ├── experiments_comparison.ipynb
-│   └── visualization_dashboard.ipynb
+│   ├── main_project.ipynb
 │
 ├── src/
 │   ├── __init__.py
@@ -147,20 +144,10 @@ ambulance-dispatch-ai/
 │
 ├── data/
 │   ├── raw/
-│   │   ├── road_nodes.csv
-│   │   ├── road_edges.csv
-│   │   ├── hospitals.csv
-│   │   ├── depots.csv
-│   │   └── historical_emergencies.csv
+│   │   ├── .gitkeep
 │   │
 │   ├── processed/
-│   │   ├── weighted_graph.json
-│   │   ├── emergency_events.csv
-│   │   └── traffic_profiles.json
-│   │
-│   └── generated/
-│       ├── surge_test_events.csv
-│       └── poisson_simulation_events.csv
+│       ├── .gitkeep
 │
 ├── tests/
 │   ├── test_astar.py
@@ -169,28 +156,8 @@ ambulance-dispatch-ai/
 │   ├── test_dispatch.py
 │   └── test_simulation.py
 │
-├── outputs/
-│   ├── figures/
-│   │   ├── response_time_histogram.png
-│   │   ├── traffic_heatmap.png
-│   │   ├── convergence_plot.png
-│   │   └── route_visualization.png
-│   │
-│   ├── logs/
-│   │   ├── simulation_log.txt
-│   │   └── experiment_results.csv
-│   │
-│   └── dashboard_screenshots/
-│
-├── docs/
-│   ├── project_report.pdf
-│   ├── workplan.pdf
-│   ├── algorithm_notes.md
-│   └── references.md
-│
-└── demo/
-│   ├── demo_script.md
-│   └── demo_scenarios.md
+└── report/
+│   ├── .gitkeep
 │
 └── README.md
 ```
