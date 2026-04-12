@@ -27,7 +27,7 @@ Models the emergency response environment:
 Contains dispatch and routing strategies:
 - Greedy nearest ambulance
 - A* routing
-- Dijkstra routing
+- Hill climbing
 - Reinforcement learning dispatcher
 ### src/evaluation
 Performance measurement:
@@ -147,20 +147,10 @@ ambulance-dispatch-ai/
 │
 ├── data/
 │   ├── raw/
-│   │   ├── road_nodes.csv
-│   │   ├── road_edges.csv
-│   │   ├── hospitals.csv
-│   │   ├── depots.csv
-│   │   └── historical_emergencies.csv
+│   │   ├── .gitkeep
 │   │
 │   ├── processed/
-│   │   ├── weighted_graph.json
-│   │   ├── emergency_events.csv
-│   │   └── traffic_profiles.json
-│   │
-│   └── generated/
-│       ├── surge_test_events.csv
-│       └── poisson_simulation_events.csv
+│       ├── .gitkeep
 │
 ├── tests/
 │   ├── test_astar.py
@@ -181,12 +171,6 @@ ambulance-dispatch-ai/
 │   │   └── experiment_results.csv
 │   │
 │   └── dashboard_screenshots/
-│
-├── docs/
-│   ├── project_report.pdf
-│   ├── workplan.pdf
-│   ├── algorithm_notes.md
-│   └── references.md
 │
 └── demo/
 │   ├── demo_script.md
