@@ -27,15 +27,14 @@ Models the emergency response environment:
 Contains dispatch and routing strategies:
 - Greedy nearest ambulance
 - A* routing
-- Dijkstra routing
-- Reinforcement learning dispatcher
+- Hill climbing
 ### src/evaluation
 Performance measurement:
 - Average response time
 - Maximum delay
 - Utilization rate
 - Comparative analysis
-### src/utils
+### src/core
 Shared utilities:
 - Configuration
 - Distance computation
@@ -48,6 +47,7 @@ Shared utilities:
 Contains The final report of the project
 ---
 ## Installation
+NB: it is recommended to be working with a linux cmd
 Clone the repository:
 ```
 git clone https://github.com/FerhaouiAmina/Emergency-Ambulance-Dispatch-Routing.git
@@ -56,6 +56,16 @@ cd ambulance-dispatch
 Install dependencies:
 ```
 pip install -r requirements.txt
+```
+if a message shows up it means you haven't activated a virtual environment:
+Create the environment:
+```
+python -m venv .venv
+```
+Note: you can replace the ".venv" with any name you want for your environment
+Activate it:
+```
+source .venv/bin/activate
 ```
 ---
 ## Running the Simulation
@@ -79,65 +89,76 @@ python -m src.main
 ---
 ## Report
 The final report is located in the /report directory and follows the given guidelines. Each member activity is found undere Appendix B
+
 ---
 # Repository Structure
 ```
-ambulance-dispatch/
-│
-├── report/
-│   └── Mini_Project_Report.pdf
-│
-├── data/
-│   ├── raw/
-│   │   └── .gitkeep
-│   └── processed/
-│       └── .gitkeep
+ambulance-dispatch-ai/
+├── requirements.txt
+├── .gitignore
+├── notebooks/
+│   ├── main_project.ipynb
 │
 ├── src/
 │   ├── __init__.py
 │   │
-│   ├── simulation/
-│   │   ├── __init__.py
-│   │   ├── city_map.py
+│   ├── core/
+│   │   ├── graph.py
+│   │   ├── node.py
+│   │   ├── edge.py
 │   │   ├── ambulance.py
-│   │   ├── environment.py
-│   │   ├── dispatcher.py
-│   │   └── traffic_model.py
+│   │   ├── hospital.py
+│   │   ├── emergency.py
+│   │   └── simulation_engine.py
 │   │
 │   ├── algorithms/
-│   │   ├── __init__.py
-│   │   ├── base_algorithm.py
+│   │   ├── astar.py
+│   │   ├── realtime_astar.py
 │   │   ├── greedy_dispatch.py
-│   │   ├── a_star_routing.py
-│   │   ├── dijkstra_routing.py
-│   │   └── reinforcement_learning.py
+│   │   ├── astar_dispatch.py
+│   │   ├── hill_climbing.py
+│   │   └── standby_optimizer.py
+│   │
+│   ├── traffic/
+│   │   ├── traffic_model.py
+│   │   ├── congestion_updates.py
+│   │   └── rush_hour_rules.py
+│   │
+│   ├── simulation/
+│   │   ├── event_queue.py
+│   │   ├── poisson_generator.py
+│   │   ├── surge_scenarios.py
+│   │   └── dispatcher.py
 │   │
 │   ├── evaluation/
-│   │   ├── __init__.py
 │   │   ├── metrics.py
-│   │   └── performance_tracker.py
+│   │   ├── response_time_analysis.py
+│   │   ├── static_vs_dynamic.py
+│   │   └── algorithm_comparison.py
 │   │
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   ├── data_loader.py
-│   │   ├── distance.py
-│   │   └── logger.py
-│   │
-│   └── main.py
+│   └── visualization/
+│       ├── map_animation.py
+│       ├── heatmap.py
+│       ├── histograms.py
+│       └── dashboard.py
 │
-├── notebooks/
-│   └── Main_Project.ipynb
+├── data/
+│   ├── raw/
+│   │   ├── .gitkeep
+│   │
+│   ├── processed/
+│       ├── .gitkeep
 │
 ├── tests/
-│   ├── __init__.py
-│   ├── test_city_map.py
-│   ├── test_dispatcher.py
-│   ├── test_algorithms.py
-│   └── test_metrics.py
+│   ├── test_astar.py
+│   ├── test_realtime_astar.py
+│   ├── test_hill_climbing.py
+│   ├── test_dispatch.py
+│   └── test_simulation.py
 │
-├── requirements.txt
-├── README.md
-└── .gitignore
+└── report/
+│   ├── .gitkeep
+│
+└── README.md
 ```
 
