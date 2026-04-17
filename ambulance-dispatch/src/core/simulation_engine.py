@@ -2,7 +2,9 @@ import random
 
 from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
+
 from src.core.hospital import Hospital
+from src.core.ambulance import Ambulance
 
 
 class SimulationEngine:
@@ -28,16 +30,10 @@ class SimulationEngine:
             range(grid_size * grid_size)
         )
 
-        # M5 PLACEHOLDER:
-        # once ambulance.py is ready, import Ambulance class
-        # and initialize ambulance fleet here
+        # M5 INTEGRATION
         self.ambulances = []
 
-    def place_facilities(
-        self,
-        num_hospitals=3,
-        num_depots=2
-    ):
+    def place_facilities(self, num_hospitals=3, num_depots=2):
         selected_nodes = random.sample(
             self.graph_nodes,
             num_hospitals + num_depots
@@ -46,9 +42,6 @@ class SimulationEngine:
         hospital_nodes = selected_nodes[:num_hospitals]
         depot_nodes = selected_nodes[num_hospitals:]
 
-        # M5 + M6 BOUNDARY:
-        # Hospital class comes from M5
-        # placement logic is M6
         self.hospitals = [
             Hospital(i + 1, node)
             for i, node in enumerate(hospital_nodes)
@@ -56,24 +49,62 @@ class SimulationEngine:
 
         self.depots = depot_nodes
 
+    def initialize_ambulances(self, num_ambulances=2):
+        self.ambulances = []
+
+        for i in range(num_ambulances):
+            start_node = self.depots[i % len(self.depots)]
+
+            ambulance = Ambulance(
+                id=i + 1,
+                start_node=start_node
+            )
+
+            self.ambulances.append(ambulance)
+
     def initialize(self):
         self.place_facilities()
 
-        first_event = self.generator.generate_next_arrival(
-            0
-        )
+        self.initialize_ambulances()
 
+        first_event = self.generator.generate_next_arrival(0)
         self.event_queue.push(first_event)
 
-        # M5 PLACEHOLDER:
-        # create ambulances starting from depot nodes
-        # example:
-        # self.ambulances.append(
-        #     Ambulance(ambulance_id=1, start_node=self.depots[0])
-        # )
+    def find_nearest_available_ambulance(self):
+        available = [
+            amb for amb in self.ambulances if amb.is_available()
+        ]
+
+        if not available:
+            return None
+
+        # simple random selection (Week 1 baseline)
+        return random.choice(available)
+
+    def dispatch_ambulance(self, ambulance, event):
+        # placeholder path (Week 1: no routing yet)
+        path = [event.x * self.grid_size + event.y]
+
+        ambulance.dispatch(
+            emergency_node=path[-1],
+            path=path,
+            emergency=event,
+            current_time=self.current_time
+        )
+
+        event.assign()
+
+    def update_ambulances(self):
+        for ambulance in self.ambulances:
+            ambulance.update(self.current_time)
 
     def process_event(self, event):
         self.processed_events.append(event)
+
+        ambulance = self.find_nearest_available_ambulance()
+
+        if ambulance is not None:
+            self.dispatch_ambulance(ambulance, event)
 
     def run(self):
         self.initialize()
@@ -95,10 +126,10 @@ class SimulationEngine:
 
             self.process_event(event)
 
-            new_event = (
-                self.generator.generate_next_arrival(
-                    self.current_time
-                )
+            self.update_ambulances()
+
+            new_event = self.generator.generate_next_arrival(
+                self.current_time
             )
 
             self.event_queue.push(new_event)
