@@ -1,12 +1,6 @@
-class Emergency:
-    def __init__(self, node, time):
-        self.node = node
-        self.time = time
-        self.assigned = False
+from core.node import Node
 
-    def assign(self, ambulance):
-        self.assigned = True
-        self.ambulance = ambulance
-
-    def __repr__(self):
-        return f"Emergency(Node={self.node}, time={self.time})"
+class Emergency(Node):
+    def __init__(self, node_id, x, y, severity=1):
+        super().__init__(node_id, x, y, "emergency")
+        self.severity = severity
