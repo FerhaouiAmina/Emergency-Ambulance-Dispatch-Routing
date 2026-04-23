@@ -69,4 +69,3 @@ class Ambulance:
 
     def __repr__(self):
         return f"Ambulance(id={self.id}, state={self.state.name}, node={self.current_node})"
-
