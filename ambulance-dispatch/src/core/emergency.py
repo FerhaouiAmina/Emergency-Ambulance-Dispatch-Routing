@@ -1,6 +1,21 @@
-from core.node import Node
+class Emergency:
+    def __init__(self, event_id, x, y, timestamp):
+        self.event_id = event_id
+        self.x = x
+        self.y = y
+        self.timestamp = timestamp
+        self.assigned = False
 
-class Emergency(Node):
-    def __init__(self, node_id, x, y, severity=1):
-        super().__init__(node_id, x, y, "emergency")
-        self.severity = severity
+    def assign(self):
+        self.assigned = True
+
+    def __repr__(self):
+        return (
+            f"Emergency("
+            f"id={self.event_id}, "
+            f"x={self.x}, "
+            f"y={self.y}, "
+            f"time={self.timestamp:.2f}, "
+            f"assigned={self.assigned}"
+            f")"
+        )
