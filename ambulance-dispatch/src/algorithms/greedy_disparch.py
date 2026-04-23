@@ -18,7 +18,7 @@ class DispatchSystem:
         available = [a for a in self.ambulances if a.is_available()] #Creates a list of ambulances that are free
 
         if not available:
-            print(f"[t={current_time}] No ambulance available for emergency {emergency.id}")
+            print(f"[t={current_time}] No ambulance available for emergency {emergency.event_id}")
             return None
 
         # Choose closest
@@ -37,7 +37,7 @@ class DispatchSystem:
         chosen.dispatch(emergency.node, path, emergency, current_time)
 
         print(f"[t={current_time}] Greedy → Ambulance {chosen.id} "
-              f"→ Emergency {emergency.id} (dist={dist:.2f})")
+              f"→ Emergency {emergency.event_id} (dist={dist:.2f})")
 
         return chosen
 
