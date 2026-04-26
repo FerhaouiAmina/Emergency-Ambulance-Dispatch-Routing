@@ -33,7 +33,7 @@ class SimulationEngine:
         # M3 PLACEHOLDER
         self.graph = None
         self.dispatcher = Dispatcher(self.graph)
-
+        self.standby_optimizer = StandbyOptimizer(self.graph)
         # M5 INTEGRATION
         self.ambulances = []
 
