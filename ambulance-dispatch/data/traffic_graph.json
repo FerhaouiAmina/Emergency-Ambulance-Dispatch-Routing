@@ -1,0 +1,15 @@
+{
+  "time_modes": ["normal", "rush", "night"],
+  "multipliers": {
+    "main": {
+      "normal": 1,
+      "rush": 3,
+      "night": 0.5
+    },
+    "secondary": {
+      "normal": 1,
+      "rush": 2,
+      "night": 0.7
+    }
+  }
+}
