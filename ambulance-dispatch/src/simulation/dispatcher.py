@@ -15,6 +15,6 @@ class Dispatcher:
 
     def compute_path(self, start_node, target_node):
         # M1/M2 PLACEHOLDER:
-        # Replace with A* or Real-Time A* later
+        # blassat A* and real time A*
 
         return [target_node]
