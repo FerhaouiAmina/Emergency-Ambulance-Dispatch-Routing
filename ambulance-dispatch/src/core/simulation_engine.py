@@ -1,5 +1,6 @@
 import random
 
+from src.simulation.dispatcher import Dispatcher
 from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
 
@@ -26,9 +27,11 @@ class SimulationEngine:
         self.hospitals = []
         self.depots = []
 
-        self.graph_nodes = list(
-            range(grid_size * grid_size)
-        )
+        self.graph_nodes = list(range(grid_size * grid_size))
+
+        # M3 PLACEHOLDER
+        self.graph = None
+        self.dispatcher = Dispatcher(self.graph)
 
         # M5 INTEGRATION
         self.ambulances = []
@@ -64,29 +67,32 @@ class SimulationEngine:
 
     def initialize(self):
         self.place_facilities()
-
         self.initialize_ambulances()
 
         first_event = self.generator.generate_next_arrival(0)
         self.event_queue.push(first_event)
 
-    def find_nearest_available_ambulance(self):
-        available = [
-            amb for amb in self.ambulances if amb.is_available()
-        ]
+    def emergency_to_node(self, event):
+        return event.x * self.grid_size + event.y
 
-        if not available:
-            return None
+    def dispatch_ambulance(self, event):
+        emergency_node = self.emergency_to_node(event)
 
-        # simple random selection (Week 1 baseline)
-        return random.choice(available)
+        ambulance = self.dispatcher.find_nearest_ambulance(
+            self.ambulances,
+            emergency_node
+        )
 
-    def dispatch_ambulance(self, ambulance, event):
-        # placeholder path (Week 1: no routing yet)
-        path = [event.x * self.grid_size + event.y]
+        if ambulance is None:
+            return
+
+        path = self.dispatcher.compute_path(
+            ambulance.current_node,
+            emergency_node
+        )
 
         ambulance.dispatch(
-            emergency_node=path[-1],
+            emergency_node=emergency_node,
             path=path,
             emergency=event,
             current_time=self.current_time
@@ -97,14 +103,10 @@ class SimulationEngine:
     def update_ambulances(self):
         for ambulance in self.ambulances:
             ambulance.update(self.current_time)
-
+    
     def process_event(self, event):
         self.processed_events.append(event)
-
-        ambulance = self.find_nearest_available_ambulance()
-
-        if ambulance is not None:
-            self.dispatch_ambulance(ambulance, event)
+        self.dispatch_ambulance(event)
 
     def run(self):
         self.initialize()
@@ -116,7 +118,6 @@ class SimulationEngine:
                 break
 
             self.current_time = next_event.timestamp
-
             event = self.event_queue.pop()
 
             print(
@@ -125,7 +126,6 @@ class SimulationEngine:
             )
 
             self.process_event(event)
-
             self.update_ambulances()
 
             new_event = self.generator.generate_next_arrival(
@@ -133,3 +133,5 @@ class SimulationEngine:
             )
 
             self.event_queue.push(new_event)
+    def emergency_to_node(self, event):
+        return event.x * self.grid_size + event.y
