@@ -1,3 +1,6 @@
 {
-  "hospitals": [0, 2]
+  "hospitals": [
+    {"id": "H1", "node": 4},
+    {"id": "H2", "node": 11}
+  ]
 }
