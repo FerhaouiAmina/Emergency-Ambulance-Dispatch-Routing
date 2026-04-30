@@ -53,7 +53,7 @@ class Simulation:
             prev_state = amb.state
             amb.updqte(self.time)
 
-        # Just arrived at scene
+        #arrived at scene
             if prev_state == AmbulanceState.DISPATCHED and amb.state == AmbulanceState.AT_SCENE:
                 self.dispatch.log_response(
                     amb.current_emergency.event_id,
@@ -65,7 +65,7 @@ class Simulation:
                 if hospital:
                     amb.go_to_hospital(hospital.node, path)
 
-            # Just dropped patient off → reposition
+            #dropped patient off → reposition
             elif prev_state == AmbulanceState.TO_HOSPITAL and amb.state == AmbulanceState.IDLE:
                 self._reposition(amb)  
 
@@ -80,9 +80,9 @@ class Simulation:
             path = self.path_fn(amb.current_node, standby_node)
             amb.path = path
             amb.path_index = 0
-            print(f"  └─ Ambulance {amb.id} repositioning to node {standby_node} [Hill Climbing]")
+            print(f"Ambulance {amb.id} repositioning to node {standby_node} [Hill Climbing]")
         else:
-            print(f"  └─ Ambulance {amb.id} staying at node {amb.current_node}")
+            print(f"Ambulance {amb.id} staying at node {amb.current_node}")
 
 
     def _coords_to_node(self, x, y):
