@@ -1,6 +1,7 @@
 class Emergency:
     def __init__(self, event_id, x, y, timestamp):
         self.event_id = event_id
+        self.node = None
         self.x = x
         self.y = y
         self.timestamp = timestamp
