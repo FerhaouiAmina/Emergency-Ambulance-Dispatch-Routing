@@ -9,9 +9,9 @@ class DispatchSystem:
 
 
     def euclidean_distance(self, node_a, node_b):
-        ax, ay = self.graph.nodes[node_a]['pos'] #node_a is an id
-        bx, by = self.graph.nodes[node_b]['pos']
-        return math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
+        a = self.graph.nodes[node_a] #node_a is an id
+        b = self.graph.nodes[node_b]
+        return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
 
 
     def greedy_dispatch(self, emergency, current_time, path_fn):
