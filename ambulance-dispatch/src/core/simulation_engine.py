@@ -3,6 +3,7 @@ import random
 from src.simulation.dispatcher import Dispatcher
 from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
+from src.algorithms.standby_optimizer import StandbyOptimizer
 
 from src.core.hospital import Hospital
 from src.core.ambulance import Ambulance
@@ -32,7 +33,7 @@ class SimulationEngine:
         # M3 PLACEHOLDER
         self.graph = None
         self.dispatcher = Dispatcher(self.graph)
-
+        self.standby_optimizer = StandbyOptimizer(self.graph)
         # M5 INTEGRATION
         self.ambulances = []
 
@@ -103,6 +104,7 @@ class SimulationEngine:
     def update_ambulances(self):
         for ambulance in self.ambulances:
             ambulance.update(self.current_time)
+        self.reposition_ambulances()
     
     def process_event(self, event):
         self.processed_events.append(event)
@@ -135,3 +137,28 @@ class SimulationEngine:
             self.event_queue.push(new_event)
     def emergency_to_node(self, event):
         return event.x * self.grid_size + event.y
+    
+    def get_candidate_nodes(self):
+        return self.graph_nodes
+    
+    def reposition_ambulances(self):
+        idle_ambulances = [
+            amb for amb in self.ambulances if amb.is_available()
+        ]
+
+        if not idle_ambulances:
+            return
+
+        candidate_nodes = self.get_candidate_nodes()
+
+        optimal_positions = self.standby_optimizer.compute_optimal_positions(
+            idle_ambulances,
+            candidate_nodes
+        )
+
+        for amb, node in zip(idle_ambulances, optimal_positions):
+            amb.target_node = node
+            amb.path = [node]
+            amb.path_index = 0
+
+    
