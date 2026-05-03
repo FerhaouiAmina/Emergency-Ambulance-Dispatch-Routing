@@ -31,11 +31,11 @@ class Simulation:
             self._update_ambulances()
             self.time += 1
 
-    print("simulation ended at t={self.time}")
-    print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
+        print(f"simulation ended at t={self.time}")
+        print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
 
 
-    def process_events(self):
+    def _process_events(self):
         while not self.event_queue.is_empty():
             event = self.event_queue.peek()
             if int(event.timestamp) != self.time:
@@ -51,7 +51,7 @@ class Simulation:
     def _update_ambulances(self):
         for amb in self.ambulances:
             prev_state = amb.state
-            amb.updqte(self.time)
+            amb.update(self.time)
 
         #arrived at scene
             if prev_state == AmbulanceState.DISPATCHED and amb.state == AmbulanceState.AT_SCENE:
