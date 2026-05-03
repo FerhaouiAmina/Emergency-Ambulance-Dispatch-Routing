@@ -1,7 +1,6 @@
-[
-  {"node": 0, "time": 1},
-  {"node": 2, "time": 3},
-  {"node": 1, "time": 5},
-  {"node": 2, "time": 7},
-  {"node": 0, "time": 10}
-]
+{
+  "emergencies": [
+    {"id": "E1", "node": 7},
+    {"id": "E2", "node": 13}
+  ]
+}
