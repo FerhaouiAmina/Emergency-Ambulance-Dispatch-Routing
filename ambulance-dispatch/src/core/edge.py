@@ -65,3 +65,5 @@ if __name__ == "__main__":
     print(f"Travel time (normal): {edge.get_travel_time():.2f} hours")
     print(f"Travel time (rush hour): {edge.get_travel_time(2.0):.2f} hours")
     print(f"Edge dict: {edge.to_dict()}")
+
+
