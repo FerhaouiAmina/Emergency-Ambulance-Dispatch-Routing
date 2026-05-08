@@ -1,7 +1,7 @@
 from src.core.ambulance import Ambulance
 from src.core.hospital import Hospital
 from src.core.emergency import Emergency
-from src.simulation import Simulation
+from src.simulation.simulation import Simulation
 
 
 class FakeGraph:
