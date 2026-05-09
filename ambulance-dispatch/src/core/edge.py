@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 class Edge:
     def __init__(self, edge_id, from_node, to_node,
                  length, highway, speed_kph,
@@ -9,9 +11,33 @@ class Edge:
         self.highway = highway
         self.speed_kph = speed_kph
         self.oneway = oneway
-
-        # precompute travel time (minutes)
-        self.travel_time = (length / 1000) / speed_kph * 60
-
+        
+        #Merged teh 2 functions since we need teh distance (new: length) in them
     def __repr__(self):
-        return f"Edge({self.from_node}->{self.to_node}, {self.highway})"
+        return f"Edge({self.from_node}->{self.to_node},{self.length:.1f}m, {self.highway})"
+    
+    def get_travel_time(self, traffic_multiplier: float = 1.0) -> float:
+        """Calculate travel time considering traffic"""
+        adjusted_speed = self.speed_limit / traffic_multiplier
+        return self.length / adjusted_speed if adjusted_speed > 0 else float('inf')
+    
+    #def to_dict(self) -> Dict[str, Any]:
+    
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Edge):
+            return False
+        return (self.from_node == other.from_node and self.to_node == other.to_node) or \
+               (self.from_node == other.to_node and self.to_node == other.from_node)
+    
+    def __hash__(self) -> int:
+        return hash((min(self.from_node, self.to_node), max(self.from_node, self.to_node)))
+
+
+if __name__ == "__main__":
+    # Test edge functionality
+    edge = Edge(1, 2, 3.5, "main", 60)
+    
+    print(f"Edge: {edge}")
+    print(f"Travel time (normal): {edge.get_travel_time():.2f} hours")
+    print(f"Travel time (rush hour): {edge.get_travel_time(2.0):.2f} hours")
+    #print(f"Edge dict: {edge.to_dict()}")
