@@ -1,8 +1,8 @@
 import json
-from core.node import Node
-from core.edge import Edge
-from core.hospital import Hospital
-from core.emergency import Emergency
+from src.core.node import Node
+from src.core.edge import Edge
+from src.core.hospital import Hospital
+from src.core.emergency import Emergency
 
 class Graph:
     def __init__(self, file_path):

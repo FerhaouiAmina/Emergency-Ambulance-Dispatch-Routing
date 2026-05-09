@@ -4,6 +4,7 @@ from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
 from src.algorithms.greedy_disparch import DispatchSystem
 from src.algorithms.hill_climbing import HillClimbing
+import json
 
 class Simulation:
     def __init__(self, graph, ambulances, hospitals, path_fn, hill_climbing=None):
@@ -92,4 +93,32 @@ class Simulation:
             key=lambda n: (n.x - x)**2 + (n.y - y)**2
         )
         return best_node.id
+    
+
+    def run(self, max_time):
+        print("simulation started")
+
+        while self.time <= max_time:
+            self._process_events()
+            self._update_ambulances()
+            self.time += 1
+
+        print(f"simulation ended at t={self.time}")
+        print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
+
+        self.save_log() 
+
+
+    def save_log(self, path="data/response_log.json"):
+        with open(path, "w") as f:
+            json.dump(self.dispatch.response_log, f, indent=2)
+        print(f"Saved response log → {path}")
+
+
+    def save_hc_history(self, history, path="data/hc_history.json"):
+        with open(path, "w") as f:
+            json.dump(history, f, indent=2)
+        print(f"Saved HC history → {path}")
+
+
 

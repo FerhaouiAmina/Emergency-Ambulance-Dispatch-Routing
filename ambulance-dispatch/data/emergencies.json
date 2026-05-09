@@ -1,6 +1,24 @@
 {
   "emergencies": [
-    {"id": "E1", "node": 7},
-    {"id": "E2", "node": 13}
+    {"id": "E1",  "node": 7},
+    {"id": "E2",  "node": 13},
+    {"id": "E3",  "node": 2},
+    {"id": "E4",  "node": 18},
+    {"id": "E5",  "node": 6},
+    {"id": "E6",  "node": 22},
+    {"id": "E7",  "node": 1},
+    {"id": "E8",  "node": 14},
+    {"id": "E9",  "node": 9},
+    {"id": "E10", "node": 17},
+    {"id": "E11", "node": 3},
+    {"id": "E12", "node": 21},
+    {"id": "E13", "node": 8},
+    {"id": "E14", "node": 16},
+    {"id": "E15", "node": 5},
+    {"id": "E16", "node": 23},
+    {"id": "E17", "node": 0},
+    {"id": "E18", "node": 19},
+    {"id": "E19", "node": 12},
+    {"id": "E20", "node": 24}
   ]
 }

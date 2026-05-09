@@ -31,7 +31,7 @@ ambulances = [
 ]
 
 # 1 hospital at node 99
-hospitals = [Hospital(node_id=99, x=10, y=0)]
+hospitals = [Hospital("H1", 99)]
 
 # create simulation with no hill climbing yet
 sim = Simulation(
