@@ -1,7 +1,174 @@
-[
-  {"node": 0, "time": 1},
-  {"node": 2, "time": 3},
-  {"node": 1, "time": 5},
-  {"node": 2, "time": 7},
-  {"node": 0, "time": 10}
-]
+{
+  "metadata": {
+    "total_emergencies": 15,
+    "time_period_hours": 24,
+    "description": "Emergency calls with varying severity and priority levels"
+  },
+  "emergencies": [
+    {
+      "id": 0,
+      "node_id": 2,
+      "time": 1.2,
+      "severity": "high",
+      "type": "cardiac_arrest",
+      "priority": "critical",
+      "coordinates": {"x": 4, "y": 0},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 1,
+      "node_id": 7,
+      "time": 3.8,
+      "severity": "medium",
+      "type": "motor_vehicle_accident",
+      "priority": "urgent",
+      "coordinates": {"x": 2, "y": 4},
+      "requires_hospital": true,
+      "estimated_patients": 2
+    },
+    {
+      "id": 2,
+      "node_id": 4,
+      "time": 5.5,
+      "severity": "low",
+      "type": "fall",
+      "priority": "routine",
+      "coordinates": {"x": 3, "y": 3},
+      "requires_hospital": false,
+      "estimated_patients": 1
+    },
+    {
+      "id": 3,
+      "node_id": 1,
+      "time": 7.3,
+      "severity": "medium",
+      "type": "stroke",
+      "priority": "urgent",
+      "coordinates": {"x": 2, "y": 1},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 4,
+      "node_id": 9,
+      "time": 9.1,
+      "severity": "high",
+      "type": "industrial_accident",
+      "priority": "critical",
+      "coordinates": {"x": 6, "y": 4},
+      "requires_hospital": true,
+      "estimated_patients": 3
+    },
+    {
+      "id": 5,
+      "node_id": 12,
+      "time": 12.4,
+      "severity": "low",
+      "type": "minor_injury",
+      "priority": "routine",
+      "coordinates": {"x": 5, "y": 7},
+      "requires_hospital": false,
+      "estimated_patients": 1
+    },
+    {
+      "id": 6,
+      "node_id": 15,
+      "time": 14.7,
+      "severity": "medium",
+      "type": "respiratory_distress",
+      "priority": "urgent",
+      "coordinates": {"x": 2, "y": 8},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 7,
+      "node_id": 3,
+      "time": 16.2,
+      "severity": "low",
+      "type": "allergic_reaction",
+      "priority": "routine",
+      "coordinates": {"x": 1, "y": 3},
+      "requires_hospital": false,
+      "estimated_patients": 1
+    },
+    {
+      "id": 8,
+      "node_id": 17,
+      "time": 18.9,
+      "severity": "high",
+      "type": "trauma",
+      "priority": "critical",
+      "coordinates": {"x": 6, "y": 8},
+      "requires_hospital": true,
+      "estimated_patients": 2
+    },
+    {
+      "id": 9,
+      "node_id": 10,
+      "time": 21.3,
+      "severity": "medium",
+      "type": "chest_pain",
+      "priority": "urgent",
+      "coordinates": {"x": 1, "y": 7},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 10,
+      "node_id": 19,
+      "time": 23.8,
+      "severity": "low",
+      "type": "dehydration",
+      "priority": "routine",
+      "coordinates": {"x": 3, "y": 10},
+      "requires_hospital": false,
+      "estimated_patients": 1
+    },
+    {
+      "id": 11,
+      "node_id": 5,
+      "time": 26.1,
+      "severity": "medium",
+      "type": "fracture",
+      "priority": "urgent",
+      "coordinates": {"x": 5, "y": 2},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 12,
+      "node_id": 8,
+      "time": 28.5,
+      "severity": "low",
+      "type": "dizziness",
+      "priority": "routine",
+      "coordinates": {"x": 4, "y": 5},
+      "requires_hospital": false,
+      "estimated_patients": 1
+    },
+    {
+      "id": 13,
+      "node_id": 11,
+      "time": 31.2,
+      "severity": "high",
+      "type": "severe_bleeding",
+      "priority": "critical",
+      "coordinates": {"x": 3, "y": 6},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    },
+    {
+      "id": 14,
+      "node_id": 16,
+      "time": 34.7,
+      "severity": "medium",
+      "type": "burn",
+      "priority": "urgent",
+      "coordinates": {"x": 4, "y": 9},
+      "requires_hospital": true,
+      "estimated_patients": 1
+    }
+  ]
+}

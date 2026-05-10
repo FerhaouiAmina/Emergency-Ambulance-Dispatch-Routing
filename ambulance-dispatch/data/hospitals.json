@@ -1,3 +1,48 @@
 {
-  "hospitals": [0, 2]
+  "metadata": {
+    "total_hospitals": 4,
+    "description": "Emergency medical facilities with trauma centers and emergency departments"
+  },
+  "hospitals": [
+    {
+      "id": 0,
+      "node_id": 7,
+      "name": "Metro General Hospital",
+      "type": "trauma_center",
+      "capacity": 200,
+      "emergency_beds": 25,
+      "specialties": ["trauma", "cardiology", "neurology"],
+      "coordinates": {"x": 2, "y": 4}
+    },
+    {
+      "id": 1,
+      "node_id": 11,
+      "name": "St. Mary's Medical Center",
+      "type": "general",
+      "capacity": 150,
+      "emergency_beds": 15,
+      "specialties": ["emergency", "pediatrics", "maternity"],
+      "coordinates": {"x": 3, "y": 6}
+    },
+    {
+      "id": 2,
+      "node_id": 15,
+      "name": "University Hospital",
+      "type": "academic",
+      "capacity": 300,
+      "emergency_beds": 30,
+      "specialties": ["research", "cancer", "transplant"],
+      "coordinates": {"x": 2, "y": 8}
+    },
+    {
+      "id": 3,
+      "node_id": 19,
+      "name": "South Community Hospital",
+      "type": "community",
+      "capacity": 100,
+      "emergency_beds": 10,
+      "specialties": ["primary_care", "rehabilitation"],
+      "coordinates": {"x": 3, "y": 10}
+    }
+  ]
 }

@@ -1,15 +1,67 @@
 {
-  "time_modes": ["normal", "rush", "night"],
-  "multipliers": {
+  "metadata": {
+    "description": "Time-dependent traffic congestion model for urban emergency response",
+    "time_periods": ["night", "normal", "rush", "peak"],
+    "road_types": ["highway", "main", "secondary", "residential"]
+  },
+  "time_periods": [
+    {
+      "name": "night",
+      "hours": ["22:00-06:00"],
+      "description": "Light traffic during nighttime hours"
+    },
+    {
+      "name": "normal", 
+      "hours": ["06:00-09:00", "19:00-22:00"],
+      "description": "Moderate traffic during off-peak hours"
+    },
+    {
+      "name": "rush",
+      "hours": ["07:00-09:00", "17:00-19:00"],
+      "description": "Heavy traffic during morning and evening commutes"
+    },
+    {
+      "name": "peak",
+      "hours": ["08:00-09:00", "17:30-18:30"],
+      "description": "Maximum congestion during peak commute times"
+    }
+  ],
+  "congestion_multipliers": {
+    "highway": {
+      "night": 0.4,
+      "normal": 1.0,
+      "rush": 2.5,
+      "peak": 3.2
+    },
     "main": {
-      "normal": 1,
-      "rush": 3,
-      "night": 0.5
+      "night": 0.5,
+      "normal": 1.0,
+      "rush": 3.0,
+      "peak": 3.8
     },
     "secondary": {
-      "normal": 1,
-      "rush": 2,
-      "night": 0.7
+      "night": 0.6,
+      "normal": 1.0,
+      "rush": 2.0,
+      "peak": 2.5
+    },
+    "residential": {
+      "night": 0.7,
+      "normal": 1.0,
+      "rush": 1.5,
+      "peak": 1.8
     }
+  },
+  "random_events": {
+    "probability": 0.1,
+    "severity_range": [1.2, 2.5],
+    "duration_range": [15, 120],
+    "types": ["accident", "construction", "weather", "event"]
+  },
+  "emergency_vehicle_priority": {
+    "highway": 0.8,
+    "main": 0.7,
+    "secondary": 0.6,
+    "residential": 0.5
   }
 }
