@@ -1,71 +1,51 @@
-from enum import Enum
+import json
+from core.node import Node
+from core.edge import Edge
+from core.hospital import Hospital
 
-class AmbulanceState(Enum):
-    IDLE = 0  #free
-    DISPATCHED = 1 #going to emergency
-    AT_SCENE = 2#arrived at emergency
-    TO_HOSPITAL = 3 #transporting patient
-
-class Ambulance:
-    def __init__(self, id, start_node):
-        self.id = id
-        self.current_node = start_node
-        self.state = AmbulanceState.IDLE
-
-        self.target_node = None  # where it is going
-        self.path = []
-        self.path_index = 0  # where we are in path
-        self.response_start_time = None
-        self.arrival_time = None
-        self.current_emergency = None
-
-    def is_available(self):
-        return self.state == AmbulanceState.IDLE
-
-    #assign Emergency
-    def dispatch(self, emergency_node, path, emergency, current_time):
-        self.state = AmbulanceState.DISPATCHED
-        self.target_node = emergency_node
-        self.path = path
-        self.path_index = 0
-        self.response_start_time = current_time
-        self.current_emergency = emergency
-
-    def move(self):
-        if self.path and self.path_index < len(self.path):
-            self.current_node = self.path[self.path_index]
-            self.path_index += 1
-
-    #check arrival
-    def reached_target(self):
-        return self.current_node == self.target_node
+class Graph:
+    def __init__(self, file_path):
+        
+        with open(file_path, 'r', encoding="utf-8") as f:
+            data = json.load(f)
     
-    def arrive_scene(self, current_time):
-        self.state = AmbulanceState.AT_SCENE
-        self.arrival_time = current_time
-        self.path = [] #Stop movement
+        self.nodes = {}
+        self.edges = {}
+        self.graph = {}  # adjacency list
+        self.hospitals = []
 
-    def go_to_hospital(self, hospital_node, path):
-        self.state = AmbulanceState.TO_HOSPITAL
-        self.target_node = hospital_node
-        self.path = path
-        self.path_index = 0
+        # ---- nodes ----
+        for n in data["nodes"]:
+            node = Node(n["id"], n["lat"], n["lon"])
+            self.nodes[n["id"]] = node
+            self.graph[n["id"]] = []
 
-    def become_idle(self):
-        self.state = AmbulanceState.IDLE
-        self.target_node = None
-        self.path = []
-        self.path_index = 0
-        self.current_emergency = None
+        # ---- edges ----
+        for e in data["edges"]:
+            edge = Edge(
+                e["id"],
+                e["from"],
+                e["to"],
+                e["length"],
+                e["highway"],
+                e["speed_kph"],
+                e.get("oneway", False)
+            )
 
-    def update(self, current_time):
-        self.move()
+            self.edges[edge.id] = edge
 
-        if self.state == AmbulanceState.DISPATCHED and self.reached_target():
-            self.arrive_scene(current_time)
+            # forward
+            self.graph[edge.from_node].append((edge.to_node, edge.id))
 
-        elif self.state == AmbulanceState.TO_HOSPITAL and self.reached_target():
-            self.become_idle()
+            # reverse if not oneway
+            if not edge.oneway:
+                self.graph[edge.to_node].append((edge.from_node, edge.id))
 
-    def __repr__(self):
-        return f"Ambulance(id={self.id}, state={self.state.name}, node={self.current_node})"
+        # ---- hospitals ----
+        for h in data["hospitals"]:
+            self.hospitals.append(
+                Hospital(h["id"], h["node_id"], h.get("name", ""))
+            )
+
+    def neighbors(self, node_id):
+        return self.graph[node_id]
