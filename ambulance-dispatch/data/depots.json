@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "total_depots": 3,
+    "description": "Ambulance stations and depots for emergency vehicle deployment"
+  },
+  "depots": [
+    {
+      "id": 0,
+      "node_id": 0,
+      "name": "Central Station",
+      "type": "main",
+      "ambulance_count": 3,
+      "coordinates": {"x": 0, "y": 0},
+      "facilities": ["dispatch", "maintenance", "medical_supplies"]
+    },
+    {
+      "id": 1,
+      "node_id": 6,
+      "name": "North District Depot",
+      "type": "satellite",
+      "ambulance_count": 2,
+      "coordinates": {"x": 0, "y": 5},
+      "facilities": ["parking", "basic_supplies"]
+    },
+    {
+      "id": 2,
+      "node_id": 13,
+      "name": "Industrial Zone Station",
+      "type": "specialized",
+      "ambulance_count": 2,
+      "coordinates": {"x": 7, "y": 6},
+      "facilities": ["hazmat", "heavy_rescue"]
+    }
+  ]
+}
