@@ -1,51 +1,27 @@
-"""
-Edge Implementation for Road Graph
-Author: M3 (Pair B)
-Week 4 - Core Infrastructure
-"""
-
 from typing import Dict, Any
 
-
 class Edge:
-    def __init__(self, from_node: int, to_node: int, distance: float, 
-                 road_type: str = "secondary", speed_limit: int = 50):
-        """
-        Initialize a graph edge
-        
-        Args:
-            from_node: Starting node ID
-            to_node: Ending node ID
-            distance: Distance between nodes
-            road_type: Type of road ("highway", "main", "secondary", "residential")
-            speed_limit: Speed limit in km/h
-        """
+    def __init__(self, edge_id, from_node, to_node,
+                 length, highway, speed_kph,
+                 oneway=False):
+        self.id = edge_id
         self.from_node = from_node
         self.to_node = to_node
-        self.distance = distance
-        self.road_type = road_type
-        self.speed_limit = speed_limit
+        self.length = length  # meters
+        self.highway = highway
+        self.speed_kph = speed_kph
+        self.oneway = oneway
+        
+        #Merged teh 2 functions since we need teh distance (new: length) in them
+    def __repr__(self):
+        return f"Edge({self.from_node}->{self.to_node},{self.length:.1f}m, {self.highway})"
     
     def get_travel_time(self, traffic_multiplier: float = 1.0) -> float:
         """Calculate travel time considering traffic"""
         adjusted_speed = self.speed_limit / traffic_multiplier
-        return self.distance / adjusted_speed if adjusted_speed > 0 else float('inf')
+        return self.length / adjusted_speed if adjusted_speed > 0 else float('inf')
     
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert edge to dictionary representation"""
-        return {
-            'from': self.from_node,
-            'to': self.to_node,
-            'distance': self.distance,
-            'type': self.road_type,
-            'speed_limit': self.speed_limit
-        }
-    
-    def __str__(self) -> str:
-        return f"Edge({self.from_node}->{self.to_node}, {self.distance:.1f}km, {self.road_type})"
-    
-    def __repr__(self) -> str:
-        return self.__str__()
+    #def to_dict(self) -> Dict[str, Any]:
     
     def __eq__(self, other) -> bool:
         if not isinstance(other, Edge):
@@ -64,6 +40,4 @@ if __name__ == "__main__":
     print(f"Edge: {edge}")
     print(f"Travel time (normal): {edge.get_travel_time():.2f} hours")
     print(f"Travel time (rush hour): {edge.get_travel_time(2.0):.2f} hours")
-    print(f"Edge dict: {edge.to_dict()}")
-
-
+    #print(f"Edge dict: {edge.to_dict()}")
