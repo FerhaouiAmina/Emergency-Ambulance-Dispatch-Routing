@@ -22,6 +22,10 @@ class Ambulance:
     def is_available(self):
         return self.state == AmbulanceState.IDLE
 
+    @property
+    def available(self):
+        return self.state == AmbulanceState.IDLE
+    
     #assign Emergency
     def dispatch(self, emergency_node, path, emergency, current_time):
         self.state = AmbulanceState.DISPATCHED

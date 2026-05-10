@@ -4,7 +4,9 @@ from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
 from src.algorithms.greedy_disparch import DispatchSystem
 from src.algorithms.hill_climbing import HillClimbing
+#from src.algorithms.astar_dispatch import astar_dispatch, dispatch_with_hospital, DispatchResult
 import json
+import math
 
 class Simulation:
     def __init__(self, graph, ambulances, hospitals, path_fn, hill_climbing=None):
@@ -18,6 +20,7 @@ class Simulation:
         self.time = 0
         self.history = []  # all emergencies that happened
         self.hc_history = []
+        #self._adj, self._weights = self._build_astar_graph()
 
     def schedule(self, emergencies): #schedule emergencies into the queue
         for e in emergencies:
