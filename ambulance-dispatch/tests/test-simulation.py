@@ -1,8 +1,3 @@
-"""
-Full Simulation Test
-Uses SimpleGraph loaded from road_graph.json
-"""
-
 import json
 import sys
 import os
@@ -187,6 +182,7 @@ def main():
         ambulances=ambulances,
         hospitals=hospitals,
         path_fn=simple_path,
+        #path_fn = lambda a, b: astar_path(graph, a, b)
         hill_climbing=hc
     )
 
