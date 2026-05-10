@@ -22,10 +22,6 @@ class Ambulance:
     def is_available(self):
         return self.state == AmbulanceState.IDLE
 
-    @property
-    def available(self):
-        return self.state == AmbulanceState.IDLE
-    
     #assign Emergency
     def dispatch(self, emergency_node, path, emergency, current_time):
         self.state = AmbulanceState.DISPATCHED
@@ -37,8 +33,7 @@ class Ambulance:
 
     def move(self):
         if self.path and self.path_index < len(self.path):
-            next_node = self.path[self.path_index]
-            self.current_node = next_node
+            self.current_node = self.path[self.path_index]
             self.path_index += 1
 
     #check arrival
