@@ -77,4 +77,21 @@ def nearest_node(lat, lon):
             best_id = nid
     return best_id
 
+def fake_a_star(a, b, traffic_multiplier=1.0):
+    """(this is for m3 m4 we need it )
+    Simple fake A* function for compatibility
+    Returns weighted distance without pathfinding
+    """
+    # Find nodes to get lat/lon
+    n1 = next((n for n in map_data['nodes'] if n['id'] == a), None)
+    n2 = next((n for n in map_data['nodes'] if n['id'] == b), None)
+    
+    if n1 is None or n2 is None:
+        return abs(a - b) * 1.5 * traffic_multiplier
+    
+    dist_km = haversine_km(n1['lat'], n1['lon'], n2['lat'], n2['lon'])
+    # Convert distance to travel time in minutes (distance km / speed km/h * 60)
+    travel_time = (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier
+    return travel_time
+
 print("A* ready.")
