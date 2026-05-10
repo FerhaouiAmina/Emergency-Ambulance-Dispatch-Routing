@@ -1,14 +1,12 @@
-class Hospital:
-    def __init__(self, hid, node_id, name=""):
-        self.id = hid
-        self.node_id = node_id
-        self.name = name
+# class Hospital:
+#     def __init__(self, hid, node_id, name=""):
+#         self.id = hid
+#         self.node_id = node_id
+#         self.name = name
 
-    def __repr__(self):
-        return f"Hospital({self.id})"
+#     def __repr__(self):
+#         return f"Hospital({self.id})"
 
->> ----------------------------------
-# i suggest we add attribute to this code
 """
 Hospital Implementation for Ambulance Dispatch
 Author: M3 (Pair B)
@@ -113,6 +111,3 @@ if __name__ == "__main__":
     print(f"Hospital after discharges: {hospital}")
     print(f"Hospital dict: {hospital.to_dict()}")
 
-
-
-<<------------------------------------
