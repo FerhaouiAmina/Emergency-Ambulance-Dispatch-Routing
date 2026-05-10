@@ -1,83 +1,71 @@
-import json
+from enum import Enum
 
-class SimpleGraph:
-    def __init__(self):
-        self.nodes = {}
-        self.edges = {}
-    
-    def add_node(self, node_id, x, y, name=""):
-        self.nodes[node_id] = {
-            'id': node_id,
-            'x': x,
-            'y': y,
-            'name': name
-        }
-    
-    def add_edge(self, from_node, to_node, distance):
-        if from_node not in self.nodes:
-            self.add_node(from_node, 0, 0)
-        if to_node not in self.nodes:
-            self.add_node(to_node, 0, 0)
-        
-        self.edges[(from_node, to_node)] = distance
-    
-    def get_neighbors(self, node_id, radius=2):
-        """Get nodes within radius"""
-        neighbors = []
-        for other_id in self.nodes:
-            if other_id != node_id:
-                other = self.nodes[other_id]
-                dist = ((other['x'] - self.nodes[node_id]['x'])**2 + 
-                       (other['y'] - self.nodes[node_id]['y'])**2)**0.5
-                if dist <= radius:
-                    neighbors.append(other_id)
-        return neighbors
-    
-    def load_from_json(self, filename):
-        """Load graph from JSON file"""
-        with open(filename, 'r') as f:
-            data = json.load(f)
-        
-        for node in data['nodes']:
-            self.add_node(node['id'], node['x'], node['y'], node.get('name', ''))
-        
-        for edge in data['edges']:
-            self.add_edge(edge['from'], edge['to'], edge['distance'])
-        
-        return len(self.nodes), len(self.edges)
-    
-    def get_statistics(self):
-        """Get graph statistics"""
-        return {
-            'nodes': len(self.nodes),
-            'edges': len(self.edges),
-            'avg_degree': sum(len(self.get_neighbors(n)) for n in self.nodes()) / len(self.nodes())
-        }
-    
-    def save_to_json(self, filename):
-        """Save graph to JSON file"""
-        data = {
-            'nodes': list(self.nodes.values()),
-            'edges': [{'from': f, 'to': t, 'distance': d} for (f, t), d in self.edges.items()]
-        }
-        
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=2)
+class AmbulanceState(Enum):
+    IDLE = 0  #free
+    DISPATCHED = 1 #going to emergency
+    AT_SCENE = 2#arrived at emergency
+    TO_HOSPITAL = 3 #transporting patient
 
-# Test the simple graph
-if __name__ == "__main__":
-    graph = SimpleGraph()
-    
-    # Load existing data
-    nodes_loaded, edges_loaded = graph.load_from_json('../../data/road_graph.json')
-    print(f"✅ Loaded {nodes_loaded} nodes, {edges_loaded} edges")
-    
-    # Print statistics
-    stats = graph.get_statistics()
-    print(f"📊 Statistics: {stats}")
-    
-    # Export
-    graph.save_to_json('../../data/road_graph_simple.json')
-    print("✅ Exported to simple JSON")
+class Ambulance:
+    def __init__(self, id, start_node):
+        self.id = id
+        self.current_node = start_node
+        self.state = AmbulanceState.IDLE
 
-       
+        self.target_node = None  # where it is going
+        self.path = []
+        self.path_index = 0  # where we are in path
+        self.response_start_time = None
+        self.arrival_time = None
+        self.current_emergency = None
+
+    def is_available(self):
+        return self.state == AmbulanceState.IDLE
+
+    #assign Emergency
+    def dispatch(self, emergency_node, path, emergency, current_time):
+        self.state = AmbulanceState.DISPATCHED
+        self.target_node = emergency_node
+        self.path = path
+        self.path_index = 0
+        self.response_start_time = current_time
+        self.current_emergency = emergency
+
+    def move(self):
+        if self.path and self.path_index < len(self.path):
+            self.current_node = self.path[self.path_index]
+            self.path_index += 1
+
+    #check arrival
+    def reached_target(self):
+        return self.current_node == self.target_node
+    
+    def arrive_scene(self, current_time):
+        self.state = AmbulanceState.AT_SCENE
+        self.arrival_time = current_time
+        self.path = [] #Stop movement
+
+    def go_to_hospital(self, hospital_node, path):
+        self.state = AmbulanceState.TO_HOSPITAL
+        self.target_node = hospital_node
+        self.path = path
+        self.path_index = 0
+
+    def become_idle(self):
+        self.state = AmbulanceState.IDLE
+        self.target_node = None
+        self.path = []
+        self.path_index = 0
+        self.current_emergency = None
+
+    def update(self, current_time):
+        self.move()
+
+        if self.state == AmbulanceState.DISPATCHED and self.reached_target():
+            self.arrive_scene(current_time)
+
+        elif self.state == AmbulanceState.TO_HOSPITAL and self.reached_target():
+            self.become_idle()
+
+    def __repr__(self):
+        return f"Ambulance(id={self.id}, state={self.state.name}, node={self.current_node})"
