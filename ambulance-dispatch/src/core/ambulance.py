@@ -33,7 +33,8 @@ class Ambulance:
 
     def move(self):
         if self.path and self.path_index < len(self.path):
-            self.current_node = self.path[self.path_index]
+            next_node = self.path[self.path_index]
+            self.current_node = next_node
             self.path_index += 1
 
     #check arrival

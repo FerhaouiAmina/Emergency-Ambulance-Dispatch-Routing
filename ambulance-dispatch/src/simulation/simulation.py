@@ -17,7 +17,7 @@ class Simulation:
         self.event_queue = EventQueue()  #waiting list of emergencies
         self.time = 0
         self.history = []  # all emergencies that happened
-
+        self.hc_history = []
 
     def schedule(self, emergencies): #schedule emergencies into the queue
         for e in emergencies:
@@ -32,8 +32,12 @@ class Simulation:
             self._update_ambulances()
             self.time += 1
 
+
         print(f"simulation ended at t={self.time}")
         print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
+
+        self.save_log()
+        self.save_hc_history()
 
 
     def _process_events(self):
@@ -64,7 +68,10 @@ class Simulation:
                 )
                 hospital, path = self.dispatch.nearest_hospital(amb.current_node, self.path_fn)
                 if hospital:
-                    amb.go_to_hospital(hospital.node, path)
+                    #amb.go_to_hospital(hospital.node, path)
+                    path = [hospital.id] 
+                    amb.go_to_hospital(hospital.id, path)  
+                    print(f"  Ambulance {amb.id} → transporting to Hospital {hospital.id} ")
 
             #dropped patient off → reposition
             elif prev_state == AmbulanceState.TO_HOSPITAL and amb.state == AmbulanceState.IDLE:
@@ -73,12 +80,17 @@ class Simulation:
 
     def _reposition(self, amb):
         if self.hill_climbing and self.history:
-            best_positions, _, _ = self.hill_climbing.random_restart(
+            best_positions, _ = self.hill_climbing.random_restart(
                 emergencies=[e.node for e in self.history],
                 num_ambulances=len(self.ambulances)
             )
+            hc_history = self.hill_climbing.convergence_history
+
+            self.hc_history.extend(hc_history)
+
             standby_node = best_positions[amb.id % len(best_positions)]
             path = self.path_fn(amb.current_node, standby_node)
+
             amb.path = path
             amb.path_index = 0
             print(f"Ambulance {amb.id} repositioning to node {standby_node} [Hill Climbing]")
@@ -95,19 +107,6 @@ class Simulation:
         return best_node.id
     
 
-    def run(self, max_time):
-        print("simulation started")
-
-        while self.time <= max_time:
-            self._process_events()
-            self._update_ambulances()
-            self.time += 1
-
-        print(f"simulation ended at t={self.time}")
-        print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
-
-        self.save_log() 
-
 
     def save_log(self, path="data/response_log.json"):
         with open(path, "w") as f:
@@ -115,9 +114,9 @@ class Simulation:
         print(f"Saved response log → {path}")
 
 
-    def save_hc_history(self, history, path="data/hc_history.json"):
+    def save_hc_history(self, path="data/hc_history.json"):
         with open(path, "w") as f:
-            json.dump(history, f, indent=2)
+            json.dump(self.hc_history, f, indent=2)
         print(f"Saved HC history → {path}")
 
 
