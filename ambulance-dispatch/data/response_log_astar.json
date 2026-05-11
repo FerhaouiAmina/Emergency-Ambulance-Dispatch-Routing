@@ -1,0 +1,42 @@
+[
+  {
+    "emergency_id": 0,
+    "response_time": 0,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 1,
+    "response_time": 9,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 2,
+    "response_time": 16,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 3,
+    "response_time": 39,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 4,
+    "response_time": 17,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 5,
+    "response_time": 23,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 6,
+    "response_time": 18,
+    "method": "astar"
+  },
+  {
+    "emergency_id": 7,
+    "response_time": 33,
+    "method": "astar"
+  }
+]
