@@ -1,4 +1,3 @@
-# ── replace your current astar.py with this ──────────────────────
 import json
 import math
 import heapq
