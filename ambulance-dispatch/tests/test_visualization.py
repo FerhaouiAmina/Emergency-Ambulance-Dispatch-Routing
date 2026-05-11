@@ -1,5 +1,5 @@
 import json
-from src.visualization.histograms import plot_response_histogram, plot_hc_convergence
+from src.visualization.histogram_astar_greedy import plot_response_histogram, plot_hc_convergence
 
 # merge greedy and astar logs
 with open("data/response_log_greedy.json") as f:

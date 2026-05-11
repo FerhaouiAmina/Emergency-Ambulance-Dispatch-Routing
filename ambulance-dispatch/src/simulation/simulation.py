@@ -47,7 +47,7 @@ class Simulation:
         _, _, fitness_history = self.hill_climbing.climb(
             emergencies    = emergency_nodes,
             num_ambulances = len(self.ambulances),
-            max_iter       = 20
+
         )
 
         self.hc_history = fitness_history
@@ -128,7 +128,6 @@ class Simulation:
                 emergencies=[e.node for e in self.history],
                 num_ambulances=len(self.ambulances),
                 restarts       = 2,     
-                max_iter       = 10 
             )
             self.hc_history.extend(self.hill_climbing.convergence_history)
             standby_node = best_positions[amb.id % len(best_positions)]
