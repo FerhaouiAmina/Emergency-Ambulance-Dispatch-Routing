@@ -3,10 +3,6 @@ from dataclasses import dataclass, field
 import math
 
 from astar import astar
-from astar import astar as _astar_orig
-
-def astar(start, goal, graph, edge_weights):
-    return _astar_orig(start, goal, graph, edge_weights)
 
 
 # Result container

@@ -4,7 +4,6 @@ import math
 import heapq
 from core.graph import Graph
 
-
 print("Loading map...")
 G = Graph("data/map.json")
 print(f"Nodes: {len(G.nodes)}")
@@ -77,14 +76,5 @@ def nearest_node(lat, lon):
             best_d = d
             best_id = nid
     return best_id
-
-
-# i added this one bcs i need it(m3)
-def fake_a_star(a, b, traffic_multiplier=1.0):
-    """
-    Simple fake A* function for compatibility
-    Returns weighted distance without pathfinding
-    """
-    return abs(a - b) * 1.5 * traffic_multiplier
 
 print("A* ready.")
