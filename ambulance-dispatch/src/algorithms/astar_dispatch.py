@@ -2,7 +2,7 @@ from typing import List, Any, Optional, Dict
 from dataclasses import dataclass, field
 import math
 
-from astar import astar
+from src.algorithms.astar import astar
 
 
 # Result container
@@ -97,8 +97,8 @@ def astar_dispatch(
         any_available = True
         candidates_checked += 1
 
-        path, cost = astar(amb.current_node, emergency_node, graph, edge_weights)
-
+        #path, cost = astar(amb.current_node, emergency_node, graph, edge_weights)
+        path, cost = astar(amb.current_node, emergency_node)
         if not path:
             continue
 
@@ -161,7 +161,8 @@ def dispatch_with_hospital(
     # ── Precompute scene → hospital for all hospitals (done ONCE) ──
     hospital_paths: Dict[Any, tuple] = {}
     for hospital in hospital_nodes:
-        path2, cost2 = astar(emergency_node, hospital, graph, edge_weights)
+        #path2, cost2 = astar(emergency_node, hospital, graph, edge_weights)
+        path2, cost2 = astar(emergency_node, hospital)
         if path2:
             hospital_paths[hospital] = (path2, cost2)
 

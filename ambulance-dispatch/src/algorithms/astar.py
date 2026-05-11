@@ -2,7 +2,7 @@
 import json
 import math
 import heapq
-from core.graph import Graph
+from src.core.graph import Graph
 
 print("Loading map...")
 G = Graph("data/map.json")

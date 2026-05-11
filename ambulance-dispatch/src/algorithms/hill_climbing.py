@@ -102,13 +102,15 @@ class HillClimbing:
                 nearby.add(current)
             
             # Get neighbors from graph
-            if hasattr(self.graph, 'edges'):
-                for edge in self.graph.edges:
-                    if edge['from'] == current and edge['to'] not in visited:
-                        to_visit.append((edge['to'], distance + 1))
-                    elif edge['to'] == current and edge['from'] not in visited:
-                        to_visit.append((edge['from'], distance + 1))
-        
+            #if hasattr(self.graph, 'edges'):
+                #for edge in self.graph.edges:
+                #    if edge['from'] == current and edge['to'] not in visited:
+                #        to_visit.append((edge['to'], distance + 1))
+                #    elif edge['to'] == current and edge['from'] not in visited:
+                #        to_visit.append((edge['from'], distance + 1))
+            for neighbour, edge_id in self.graph.graph.get(current, []):
+                if neighbour not in visited:
+                    to_visit.append((neighbour, distance + 1))
         return list(nearby)
     
     def climb(self, emergencies: List[int], num_ambulances: int, 

@@ -1,17 +1,20 @@
 from src.core.ambulance import Ambulance, AmbulanceState
 from src.simulation.event_queue import EventQueue
-from src.algorithms.greedy_dispatch import DispatchSystem
+from src.algorithms.greedy_disparch import DispatchSystem
 from src.algorithms.hill_climbing import HillClimbing
 from src.algorithms.astar import astar
+from src.algorithms.astar_dispatch import astar_dispatch
 import json
 import math
 
+
 class Simulation:
-    def __init__(self, graph, ambulances, hospitals, hill_climbing=None):
+    def __init__(self, graph, ambulances, hospitals, hill_climbing=None, mode="greedy"):
         self.graph         = graph
         self.ambulances    = ambulances
         self.hospitals     = hospitals
         self.hill_climbing = hill_climbing
+        self.mode          = mode
         self.dispatch      = DispatchSystem(ambulances, hospitals, graph)
         self.event_queue   = EventQueue()
         self.time          = 0
@@ -23,13 +26,13 @@ class Simulation:
             self.event_queue.push(e)
 
     def run(self, max_time):
-        print("simulation started")
+        print(f"simulation started [{self.mode}]")
         while self.time <= max_time:
             self._process_events()
             self._update_ambulances()
             self.time += 1
         print(f"simulation ended at t={self.time}")
-        print(f"Avg response time (greedy): {self.dispatch.average_response_time('greedy'):.2f} ticks")
+        print(f"Avg response time ({self.mode}): {self.dispatch.average_response_time(self.mode):.2f} ticks")
         self.save_log()
         self.save_hc_history()
 
@@ -41,7 +44,35 @@ class Simulation:
             event = self.event_queue.pop()
             event.node = self._coords_to_node(event.x, event.y)
             self.history.append(event)
-            self.dispatch.greedy_dispatch(event, self.time, astar)
+
+            if self.mode == "greedy":
+                self.dispatch.greedy_dispatch(
+                    event, self.time, lambda a, b: astar(a, b)[0]
+                )
+            else:
+                result = astar_dispatch(
+                    ambulances     = self.ambulances,
+                    emergency_node = event.node,
+                    graph          = self.graph.graph,
+                    edge_weights   = self._build_weights()
+                )
+                if result.success:
+                    result.ambulance.dispatch(
+                        event.node,
+                        result.path_to_scene,
+                        event,
+                        self.time
+                    )
+                    print(f"[t={self.time}] A* → Ambulance {result.ambulance.id} "
+                          f"→ Emergency {event.event_id} (cost={result.cost_to_scene:.2f})")
+                else:
+                    print(f"[t={self.time}] A* failed: {result.failure_reason}")
+
+    def _build_weights(self):
+        weights = {}
+        for edge_id, edge in self.graph.edges.items():
+            weights[edge_id] = edge.length / edge.speed_kph
+        return weights
 
     def _update_ambulances(self):
         for amb in self.ambulances:
@@ -53,7 +84,7 @@ class Simulation:
                     amb.current_emergency.event_id,
                     amb.response_start_time,
                     self.time,
-                    method="greedy"
+                    method=self.mode
                 )
                 hospital = self._nearest_hospital(amb.current_node)
                 if hospital:
@@ -77,7 +108,9 @@ class Simulation:
         if self.hill_climbing and self.history:
             best_positions, _ = self.hill_climbing.random_restart(
                 emergencies=[e.node for e in self.history],
-                num_ambulances=len(self.ambulances)
+                num_ambulances=len(self.ambulances),
+                restarts       = 2,     
+                max_iter       = 10 
             )
             self.hc_history.extend(self.hill_climbing.convergence_history)
             standby_node = best_positions[amb.id % len(best_positions)]
@@ -94,7 +127,9 @@ class Simulation:
             key=lambda n: (n.lat - lat)**2 + (n.lon - lon)**2
         ).id
 
-    def save_log(self, path="data/response_log.json"):
+    def save_log(self, path=None):
+        if path is None:
+            path = f"data/response_log_{self.mode}.json"
         with open(path, "w") as f:
             json.dump(self.dispatch.response_log, f, indent=2)
         print(f"Saved response log → {path}")
