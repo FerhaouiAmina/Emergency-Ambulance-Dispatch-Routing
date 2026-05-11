@@ -32,12 +32,3 @@ class Edge:
     def __hash__(self) -> int:
         return hash((min(self.from_node, self.to_node), max(self.from_node, self.to_node)))
 
-
-if __name__ == "__main__":
-    # Test edge functionality
-    edge = Edge(1, 2, 3.5, "main", 60)
-    
-    print(f"Edge: {edge}")
-    print(f"Travel time (normal): {edge.get_travel_time():.2f} hours")
-    print(f"Travel time (rush hour): {edge.get_travel_time(2.0):.2f} hours")
-    #print(f"Edge dict: {edge.to_dict()}")

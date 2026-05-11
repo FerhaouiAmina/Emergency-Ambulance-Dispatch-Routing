@@ -1,88 +1,86 @@
-"""
-Simple Graph Class
-M3 & M4 Work - Simplified
-"""
-
 import json
+from core.node import Node
+from core.edge import Edge
+from core.hospital import Hospital
 
-class SimpleGraph:
-    def __init__(self):
-        self.nodes = {}
-        self.edges = {}
-    
-    def add_node(self, node_id, x, y, name=""):
-        self.nodes[node_id] = {
-            'id': node_id,
-            'x': x,
-            'y': y,
-            'name': name
-        }
-    
-    def add_edge(self, from_node, to_node, distance):
-        if from_node not in self.nodes:
-            self.add_node(from_node, 0, 0)
-        if to_node not in self.nodes:
-            self.add_node(to_node, 0, 0)
-        
-        self.edges[(from_node, to_node)] = distance
-    
-    def get_neighbors(self, node_id, radius=2):
-        """Get nodes within radius"""
-        neighbors = []
-        for other_id in self.nodes:
-            if other_id != node_id:
-                other = self.nodes[other_id]
-                dist = ((other['x'] - self.nodes[node_id]['x'])**2 + 
-                       (other['y'] - self.nodes[node_id]['y'])**2)**0.5
-                if dist <= radius:
-                    neighbors.append(other_id)
-        return neighbors
-    
-    def load_from_json(self, filename):
-        """Load graph from JSON file"""
-        with open(filename, 'r') as f:
+
+class Graph:
+    def __init__(self, file_path):
+
+        with open(file_path, 'r', encoding="utf-8") as f:
             data = json.load(f)
-        
-        for node in data['nodes']:
-            self.add_node(node['id'], node['x'], node['y'], node.get('name', ''))
-        
-        for edge in data['edges']:
-            self.add_edge(edge['from'], edge['to'], edge['distance'])
-        
-        return len(self.nodes), len(self.edges)
-    
-    def get_statistics(self):
-        """Get graph statistics"""
-        return {
-            'nodes': len(self.nodes),
-            'edges': len(self.edges),
-            'avg_degree': sum(len(self.get_neighbors(n)) for n in self.nodes()) / len(self.nodes())
-        }
-    
-    def save_to_json(self, filename):
-        """Save graph to JSON file"""
-        data = {
-            'nodes': list(self.nodes.values()),
-            'edges': [{'from': f, 'to': t, 'distance': d} for (f, t), d in self.edges.items()]
-        }
-        
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=2)
 
-# Test the simple graph
-if __name__ == "__main__":
-    graph = SimpleGraph()
-    
-    # Load existing data
-    nodes_loaded, edges_loaded = graph.load_from_json('../../data/road_graph.json')
-    print(f"✅ Loaded {nodes_loaded} nodes, {edges_loaded} edges")
-    
-    # Print statistics
-    stats = graph.get_statistics()
-    print(f"📊 Statistics: {stats}")
-    
-    # Export
-    graph.save_to_json('../../data/road_graph_simple.json')
-    print("✅ Exported to simple JSON")
+        self.nodes    = {}   # node_id  -> Node
+        self.edges    = {}   # edge_id  -> Edge
+        self.graph    = {}   # node_id  -> [(neighbour_id, edge_id), ...]
+        self.hospitals = []  # list of Hospital
+        self.depots    = []  # list of raw depot dicts (used by dispatcher)
 
-       
+        # ---- nodes ----
+        for n in data["nodes"]:
+            node = Node(n["id"], n["lat"], n["lon"])
+            self.nodes[n["id"]] = node
+            self.graph[n["id"]] = []
+
+        # ---- edges ----
+        for e in data["edges"]:
+            edge = Edge(
+                e["id"],
+                e["from"],
+                e["to"],
+                e["length"],
+                e["highway"],
+                e["speed_kph"],
+                e.get("oneway", False),
+            )
+            self.edges[edge.id] = edge
+
+            # forward direction
+            self.graph[edge.from_node].append((edge.to_node, edge.id))
+
+            # reverse direction if not one-way
+            if not edge.oneway:
+                self.graph[edge.to_node].append((edge.from_node, edge.id))
+
+        # ---- hospitals ----
+        # JSON fields: id, node_id, name, type, lat, lon, capacity
+        # Hospital class: Hospital(id, x, y, name, capacity)
+        #   x = lon, y = lat
+        for h in data["hospitals"]:
+            hospital = Hospital(
+                id       = h["id"],
+                x        = h["lon"],   # x-axis = longitude
+                y        = h["lat"],   # y-axis = latitude
+                name     = h.get("name", "Medical Facility"),
+                capacity = h.get("capacity", 5),
+            )
+            # Attach the road-network node id as extra attribute
+            hospital.node_id = h["node_id"]
+            hospital.ftype   = h.get("type", "medical")
+            self.hospitals.append(hospital)
+
+        # ---- depots ----
+        # JSON fields: id, node_id, name, lat, lon, ambulance_count
+        for d in data.get("depots", []):
+            self.depots.append(d)
+
+    # ------------------------------------------------------------------
+    def neighbors(self, node_id):
+        """Return list of (neighbour_node_id, edge_id) tuples."""
+        return self.graph.get(node_id, [])
+
+    def get_edge(self, edge_id):
+        return self.edges[edge_id]
+
+    def get_node(self, node_id):
+        return self.nodes[node_id]
+
+    def get_hospital_by_node(self, node_id):
+        for h in self.hospitals:
+            if h.node_id == node_id:
+                return h
+        return None
+
+    def __repr__(self):
+        return (f"Graph(nodes={len(self.nodes)}, edges={len(self.edges)}, "
+                f"hospitals={len(self.hospitals)}, depots={len(self.depots)})")

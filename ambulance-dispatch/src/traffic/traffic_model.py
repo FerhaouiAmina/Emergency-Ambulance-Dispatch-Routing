@@ -1,16 +1,27 @@
+import json
+
+
 class TrafficModel:
-    def __init__(self):
-        self.time = "day"
-
+    def __init__(self, data_file=None):
+        self.time = "normal"
+        
+        if data_file:
+            with open(data_file, 'r') as f:
+                data = json.load(f)
+            self.multipliers = data["congestion_multipliers"]
+        else:
+            self.multipliers = {
+                "highway": {"rush": 3.0, "normal": 1.0, "night": 0.5},
+                "main": {"rush": 2.5, "normal": 1.0, "night": 0.5},
+                "secondary": {"rush": 2.0, "normal": 1.0, "night": 0.5},
+                "residential": {"rush": 1.5, "normal": 1.0, "night": 0.5}
+            }
+    
     def set_time(self, time):
-        self.time = time  # "rush", "night", "normal"
-
-    def weight_multiplier(self, road_type):
-        if self.time == "rush":
-            return 3 if road_type == "main" else 2
-        elif self.time == "night":
-            return 0.5
-        return 1
-
-    def adjusted_cost(self, base_cost, road_type):
-        return base_cost * self.weight_multiplier(road_type)
+        self.time = time
+    
+    def get_multiplier(self, road_type):
+        return self.multipliers[road_type][self.time]
+    
+    def cost(self, base_cost, road_type):
+        return base_cost * self.get_multiplier(road_type)
