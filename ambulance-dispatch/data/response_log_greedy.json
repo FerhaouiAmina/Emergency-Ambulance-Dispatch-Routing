@@ -21,12 +21,12 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 14,
+    "response_time": 19,
     "method": "greedy"
   },
   {
     "emergency_id": 5,
-    "response_time": 53,
+    "response_time": 23,
     "method": "greedy"
   },
   {
