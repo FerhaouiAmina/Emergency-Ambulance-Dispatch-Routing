@@ -33,8 +33,26 @@ class Simulation:
             self.time += 1
         print(f"simulation ended at t={self.time}")
         print(f"Avg response time ({self.mode}): {self.dispatch.average_response_time(self.mode):.2f} ticks")
+        self._run_hc_once()##########################
         self.save_log()
         self.save_hc_history()
+
+    def _run_hc_once(self):
+        if not self.hill_climbing or not self.history:
+            return
+
+        print("Running Hill Climbing for standby optimization...")
+        emergency_nodes = [e.node for e in self.history]
+
+        _, _, fitness_history = self.hill_climbing.climb(
+            emergencies    = emergency_nodes,
+            num_ambulances = len(self.ambulances),
+            max_iter       = 20
+        )
+
+        self.hc_history = fitness_history
+        print(f"HC done: {len(fitness_history)} iterations")
+
 
     def _process_events(self):
         while not self.event_queue.is_empty():

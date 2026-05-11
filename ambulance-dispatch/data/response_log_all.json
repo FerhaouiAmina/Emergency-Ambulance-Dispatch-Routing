@@ -21,17 +21,17 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 16,
+    "response_time": 14,
     "method": "greedy"
   },
   {
     "emergency_id": 5,
-    "response_time": 17,
+    "response_time": 53,
     "method": "greedy"
   },
   {
     "emergency_id": 6,
-    "response_time": 21,
+    "response_time": 54,
     "method": "greedy"
   },
   {
@@ -61,22 +61,22 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 16,
+    "response_time": 13,
     "method": "astar"
   },
   {
     "emergency_id": 5,
-    "response_time": 17,
+    "response_time": 23,
     "method": "astar"
   },
   {
     "emergency_id": 6,
-    "response_time": 21,
+    "response_time": 18,
     "method": "astar"
   },
   {
     "emergency_id": 7,
-    "response_time": 31,
+    "response_time": 33,
     "method": "astar"
   }
 ]

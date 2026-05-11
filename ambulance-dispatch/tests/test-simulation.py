@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import math
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.core.graph import Graph
@@ -40,7 +41,12 @@ def build_emergencies():
         if e["node_id"] in graph.nodes
     ]
 
-hc = HillClimbing(graph, lambda a, b: astar(a, b)[1])
+def fast_distance(a, b):
+    na = graph.nodes[a]
+    nb = graph.nodes[b]
+    return math.sqrt((na.lat - nb.lat)**2 + (na.lon - nb.lon)**2)
+
+hc = HillClimbing(graph, fast_distance)
 
 # ── Run 1: Greedy ─────────────────────────────────────────
 print("\n" + "="*50)
