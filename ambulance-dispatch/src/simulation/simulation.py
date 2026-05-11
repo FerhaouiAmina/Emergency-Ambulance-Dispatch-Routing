@@ -47,6 +47,7 @@ class Simulation:
         _, _, fitness_history = self.hill_climbing.climb(
             emergencies    = emergency_nodes,
             num_ambulances = len(self.ambulances),
+            max_iter       = 20
 
         )
 
