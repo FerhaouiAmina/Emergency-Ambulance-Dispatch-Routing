@@ -13,7 +13,12 @@ class Simulation:
         self.graph         = graph
         self.ambulances    = ambulances
         self.hospitals     = hospitals
+
+        #if hill_climbing is not None:
+         #   hc_astar = lambda a, b: astar(a, b)[1]
+         #   hill_climbing.a_star = hc_astar
         self.hill_climbing = hill_climbing
+
         self.mode          = mode
         self.dispatch      = DispatchSystem(ambulances, hospitals, graph)
         self.event_queue   = EventQueue()
@@ -33,16 +38,13 @@ class Simulation:
             self.time += 1
         print(f"simulation ended at t={self.time}")
         print(f"Avg response time ({self.mode}): {self.dispatch.average_response_time(self.mode):.2f} ticks")
-        self._run_hc_once()##########################
         self.save_log()
         self.save_hc_history()
 
-    def _run_hc_once(self):
-        if not self.hill_climbing or not self.history:
-            return
-
         print("Running Hill Climbing for standby optimization...")
-        emergency_nodes = [e.node for e in self.history]
+        emergency_nodes = [e.node for e in self.history if e.node is not None]
+        if not emergency_nodes:
+            return
 
         _, _, fitness_history = self.hill_climbing.climb(
             emergencies    = emergency_nodes,
@@ -90,7 +92,7 @@ class Simulation:
     def _build_weights(self):
         weights = {}
         for edge_id, edge in self.graph.edges.items():
-            weights[edge_id] = edge.length / edge.speed_kph
+            weights[edge_id] = (edge.length/1000) / edge.speed_kph *60
         return weights
 
     def _update_ambulances(self):
@@ -108,8 +110,12 @@ class Simulation:
                 hospital = self._nearest_hospital(amb.current_node)
                 if hospital:
                     path, _ = astar(amb.current_node, hospital.node_id)
-                    amb.go_to_hospital(hospital.node_id, path)
-                    print(f"  Ambulance {amb.id} → Hospital {hospital.name}")
+                    if path:
+                        amb.go_to_hospital(hospital.node_id, path)
+                        print(f"  Ambulance {amb.id} → Hospital {hospital.name}")
+                    else:
+                        amb.become_idle()
+                        print(f"  WARNING: No path to hospital, Ambulance {amb.id} returning idle")
 
             elif prev_state == AmbulanceState.TO_HOSPITAL and amb.state == AmbulanceState.IDLE:
                 self._reposition(amb)
@@ -124,20 +130,38 @@ class Simulation:
         )
 
     def _reposition(self, amb):
-        if self.hill_climbing and self.history:
-            best_positions, _ = self.hill_climbing.random_restart(
-                emergencies=[e.node for e in self.history],
-                num_ambulances=len(self.ambulances),
-                restarts       = 2,     
-            )
-            self.hc_history.extend(self.hill_climbing.convergence_history)
-            standby_node = best_positions[amb.id % len(best_positions)]
-            path, _ = astar(amb.current_node, standby_node)
+        if not self.hill_climbing or not self.history:
+            print(f"  Ambulance {amb.id} staying at node {amb.current_node}")
+            return
+
+        # only use confirmed nodes
+        emergency_nodes = [e.node for e in self.history if e.node is not None]
+        if not emergency_nodes:
+            print(f"  Ambulance {amb.id} staying at node {amb.current_node}")
+            return
+
+        # HC finds best standby positions given all emergencies seen so far
+        best_positions, best_fitness, fitness_history = self.hill_climbing.climb(
+            emergencies=emergency_nodes,
+            num_ambulances=len(self.ambulances),
+            max_iter=20
+        )
+
+        # log convergence for the plot
+        self.hc_history.extend(fitness_history)
+
+        # assign this ambulance its standby node
+        standby_node = best_positions[amb.id % len(best_positions)]
+
+        path, _ = astar(amb.current_node, standby_node)
+        if path:
             amb.path = path
             amb.path_index = 0
-            print(f"  Ambulance {amb.id} → standby node {standby_node} [HC]")
+            print(f"  Ambulance {amb.id} → standby node {standby_node} "
+                f"[HC fitness={best_fitness:.2f}]")
         else:
-            print(f"  Ambulance {amb.id} staying at node {amb.current_node}")
+            print(f"  Ambulance {amb.id}: no path to standby, staying put")
+
 
     def _coords_to_node(self, lat, lon):
         return min(

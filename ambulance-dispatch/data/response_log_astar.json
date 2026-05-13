@@ -36,7 +36,7 @@
   },
   {
     "emergency_id": 7,
-    "response_time": 33,
+    "response_time": 25,
     "method": "astar"
   }
 ]
