@@ -9,9 +9,10 @@ class DispatchSystem:
 
 
     def euclidean_distance(self, node_a, node_b):
-        a = self.graph.nodes[node_a] #node_a is an id
-        b = self.graph.nodes[node_b]
-        return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+        
+        a = self.graph.nodes.get(node_a) #node_a is an id
+        b = self.graph.nodes.get(node_b)
+        return math.sqrt((a.lat - b.lat) ** 2 + (a.lon - b.lon) ** 2)
 
 
     def greedy_dispatch(self, emergency, current_time, path_fn):
@@ -48,10 +49,10 @@ class DispatchSystem:
 
         best_hospital = min(
             self.hospitals,
-            key=lambda h: self.euclidean_distance(node, h.node)
+            key=lambda h: self.euclidean_distance(node, h.node_id)
         )
 
-        path = path_fn(node, best_hospital.node)
+        path = path_fn(node, best_hospital.node_id)
         return best_hospital, path
 
 

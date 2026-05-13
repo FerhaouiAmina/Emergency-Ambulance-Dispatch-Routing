@@ -36,3 +36,7 @@ class Edge:
     def __hash__(self) -> int:
         return hash((min(self.from_node, self.to_node), max(self.from_node, self.to_node)))
 
+    @property
+    def travel_time(self):
+        return (self.length / 1000) / self.speed_kph * 60  # minutes
+

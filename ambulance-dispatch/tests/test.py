@@ -1,7 +1,7 @@
 from src.core.ambulance import Ambulance
 from src.core.hospital import Hospital
 from src.core.emergency import Emergency
-from src.simulation import Simulation
+from src.simulation.simulation import Simulation
 
 
 class FakeGraph:
@@ -31,7 +31,7 @@ ambulances = [
 ]
 
 # 1 hospital at node 99
-hospitals = [Hospital(node_id=99, x=10, y=0)]
+hospitals = [Hospital("H1", 99)]
 
 # create simulation with no hill climbing yet
 sim = Simulation(

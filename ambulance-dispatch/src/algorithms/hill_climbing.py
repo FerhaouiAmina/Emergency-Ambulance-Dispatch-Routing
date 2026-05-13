@@ -37,11 +37,10 @@ class HillClimbing:
         return neighbors
     
     def _get_nearby_nodes(self, node_id: int, radius: int) -> List[int]:
-        """Get nodes within radius"""
         nearby = set()
         visited = set()
         to_visit = [(node_id, 0)]
-        
+
         while to_visit:
             current, dist = to_visit.pop(0)
             if dist > radius or current in visited:
@@ -50,8 +49,7 @@ class HillClimbing:
             if dist > 0:
                 nearby.add(current)
 
-            # Get neighbors from graph
-            for neighbor, _ in self.graph.neighbors(current):
+            for neighbor, edge_id in self.graph.get_neighbors(current):  # ← unpack tuple
                 if neighbor not in visited:
                     to_visit.append((neighbor, dist + 1))
 
@@ -61,7 +59,7 @@ class HillClimbing:
         """Perform hill climbing optimization"""
         current = self.random_state(num_ambulances)
         current_fitness = self.fitness(current, emergencies)
-        self.convergence_history.append(current_fitness)
+        fitness_history = [current_fitness]
         
         for iteration in range(max_iter):
             neighbors = self.get_neighbors(current)
@@ -77,11 +75,11 @@ class HillClimbing:
             if best_fitness < current_fitness:
                 current = best_neighbor
                 current_fitness = best_fitness
-                self.convergence_history.append(current_fitness)
+                fitness_history.append(current_fitness)
             else:
                 break
         
-        return current, current_fitness
+        return current, current_fitness, fitness_history
     
     def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5, max_iter: int = 100) -> Tuple[List[int], float]:
         """Perform hill climbing with random restarts"""
@@ -90,7 +88,8 @@ class HillClimbing:
         self.convergence_history = []
         
         for restart in range(restarts):
-            positions, fitness = self.climb(emergencies, num_ambulances, max_iter)
+            positions, fitness, history = self.climb(emergencies, num_ambulances)
+            self.convergence_history.extend(history)
             if fitness < best_fitness:
                 best_positions = positions
                 best_fitness = fitness
