@@ -1,8 +1,7 @@
 import json
-from core.node import Node
-from core.edge import Edge
-from core.hospital import Hospital
-
+from .node import Node
+from .edge import Edge
+from .hospital import Hospital
 
 class Graph:
     def __init__(self, file_path):

@@ -17,9 +17,17 @@ class Edge:
         return f"Edge({self.from_node}->{self.to_node},{self.length:.1f}m, {self.highway})"
     
     def get_travel_time(self, traffic_multiplier: float = 1.0) -> float:
-        """Calculate travel time considering traffic"""
-        adjusted_speed = self.speed_limit / traffic_multiplier
-        return self.length / adjusted_speed if adjusted_speed > 0 else float('inf')
+        if traffic_multiplier <= 0 or self.speed_kph <= 0:
+            return float('inf')
+
+        if traffic_multiplier == float('inf'):
+            return float('inf')
+
+        adjusted_speed = self.speed_kph / traffic_multiplier
+        if adjusted_speed <= 0:
+            return float('inf')
+
+        return (self.length / 1000.0) / adjusted_speed * 60.0
     
     #def to_dict(self) -> Dict[str, Any]:
     
