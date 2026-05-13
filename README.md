@@ -121,14 +121,14 @@ ambulance-dispatch-ai/
 │   │   └── standby_manager.py
 │   │
 │   ├── traffic/
-│   │   ├── traffic_model.py
-│   │   ├── congestion_updates.py
-│   │   └── rush_hour_rules.py
+│   │   └──traffic_model.py
 │   │
 │   ├── simulation/
 │   │   ├── event_queue.py
 │   │   ├── poisson_generator.py
 │   │   ├── surge_scenarios.py
+│   │   ├── dynamic_strategy.py
+│   │   ├── static_strategy.py
 │   │   └── dispatcher.py
 │   │
 │   ├── evaluation/
