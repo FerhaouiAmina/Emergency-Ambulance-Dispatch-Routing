@@ -20,8 +20,8 @@ class PoissonEmergencyGenerator:
 
     @classmethod
     def from_graph(cls, lambda_rate, graph, **kwargs):
-        xs = [n["x"] for n in graph.nodes.values()]
-        ys = [n["y"] for n in graph.nodes.values()]
+        xs = [n.x for n in graph.nodes.values()]
+        ys = [n.y for n in graph.nodes.values()]
         return cls(
             lambda_rate=lambda_rate,
             max_x=max(xs),

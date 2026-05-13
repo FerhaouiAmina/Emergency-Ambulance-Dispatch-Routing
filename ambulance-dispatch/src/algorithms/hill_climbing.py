@@ -7,6 +7,7 @@ class HillClimbing:
     def __init__(self, graph, a_star_func):
         self.graph = graph
         self.a_star = a_star_func
+        self.convergence_history = []
     
     def fitness(self, standby_positions: List[int], emergencies: List[int]) -> float:
         """Calculate average response time for positions"""
@@ -48,18 +49,19 @@ class HillClimbing:
             visited.add(current)
             if dist > 0:
                 nearby.add(current)
-            
+
             # Get neighbors from graph
-            for neighbor in self.graph.get_neighbors(current):
+            for neighbor, _ in self.graph.neighbors(current):
                 if neighbor not in visited:
                     to_visit.append((neighbor, dist + 1))
-        
+
         return list(nearby)
     
     def climb(self, emergencies: List[int], num_ambulances: int, max_iter: int = 100) -> Tuple[List[int], float]:
         """Perform hill climbing optimization"""
         current = self.random_state(num_ambulances)
         current_fitness = self.fitness(current, emergencies)
+        self.convergence_history.append(current_fitness)
         
         for iteration in range(max_iter):
             neighbors = self.get_neighbors(current)
@@ -75,18 +77,20 @@ class HillClimbing:
             if best_fitness < current_fitness:
                 current = best_neighbor
                 current_fitness = best_fitness
+                self.convergence_history.append(current_fitness)
             else:
                 break
         
         return current, current_fitness
     
-    def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5) -> Tuple[List[int], float]:
+    def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5, max_iter: int = 100) -> Tuple[List[int], float]:
         """Perform hill climbing with random restarts"""
         best_positions = None
         best_fitness = float('inf')
+        self.convergence_history = []
         
         for restart in range(restarts):
-            positions, fitness = self.climb(emergencies, num_ambulances)
+            positions, fitness = self.climb(emergencies, num_ambulances, max_iter)
             if fitness < best_fitness:
                 best_positions = positions
                 best_fitness = fitness

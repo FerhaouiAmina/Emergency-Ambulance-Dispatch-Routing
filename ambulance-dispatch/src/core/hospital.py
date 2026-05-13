@@ -35,6 +35,9 @@ class Hospital:
         self.capacity = capacity
         self.current_load = 0
         self.waiting_ambulances = []
+        # Added by Member 6 for integration with graph
+        self.node_id = None
+        self.ftype = "medical"
     
     def admit_patient(self, ambulance_id: int) -> bool:
         """

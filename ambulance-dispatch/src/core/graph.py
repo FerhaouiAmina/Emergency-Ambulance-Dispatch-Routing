@@ -1,20 +1,29 @@
 import json
-from core.node import Node
-from core.edge import Edge
-from core.hospital import Hospital
+from .node import Node
+from .edge import Edge
+from .hospital import Hospital
 
 
-class Graph:
-    def __init__(self, file_path):
+class SimpleGraph:
+    def __init__(self, file_path=None):
+        self.nodes = {}
+        self.edges = {}
+        self.graph = {}
+        self.hospitals = []
+        self.depots = []
 
+        if file_path:
+            self.load_from_json(file_path)
+
+    def load_from_json(self, file_path):
         with open(file_path, 'r', encoding="utf-8") as f:
             data = json.load(f)
 
-        self.nodes    = {}   # node_id  -> Node
-        self.edges    = {}   # edge_id  -> Edge
-        self.graph    = {}   # node_id  -> [(neighbour_id, edge_id), ...]
+        self.nodes = {}   # node_id  -> Node
+        self.edges = {}   # edge_id  -> Edge
+        self.graph = {}   # node_id  -> [(neighbour_id, edge_id), ...]
         self.hospitals = []  # list of Hospital
-        self.depots    = []  # list of raw depot dicts (used by dispatcher)
+        self.depots = []  # list of raw depot dicts (used by dispatcher)
 
         # ---- nodes ----
         for n in data["nodes"]:
@@ -48,15 +57,15 @@ class Graph:
         #   x = lon, y = lat
         for h in data["hospitals"]:
             hospital = Hospital(
-                id       = h["id"],
-                x        = h["lon"],   # x-axis = longitude
-                y        = h["lat"],   # y-axis = latitude
-                name     = h.get("name", "Medical Facility"),
-                capacity = h.get("capacity", 5),
+                id=h["id"],
+                x=h["lon"],   # x-axis = longitude
+                y=h["lat"],   # y-axis = latitude
+                name=h.get("name", "Medical Facility"),
+                capacity=h.get("capacity", 5),
             )
             # Attach the road-network node id as extra attribute
             hospital.node_id = h["node_id"]
-            hospital.ftype   = h.get("type", "medical")
+            hospital.ftype = h.get("type", "medical")
             self.hospitals.append(hospital)
 
         # ---- depots ----
