@@ -16,22 +16,22 @@
   },
   {
     "emergency_id": 3,
-    "response_time": 39,
-    "method": "greedy"
-  },
-  {
-    "emergency_id": 4,
-    "response_time": 13,
-    "method": "greedy"
-  },
-  {
-    "emergency_id": 5,
     "response_time": 27,
     "method": "greedy"
   },
   {
+    "emergency_id": 4,
+    "response_time": 26,
+    "method": "greedy"
+  },
+  {
+    "emergency_id": 5,
+    "response_time": 15,
+    "method": "greedy"
+  },
+  {
     "emergency_id": 6,
-    "response_time": 54,
+    "response_time": 30,
     "method": "greedy"
   },
   {
@@ -61,7 +61,7 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 13,
+    "response_time": 17,
     "method": "astar"
   },
   {
@@ -76,7 +76,7 @@
   },
   {
     "emergency_id": 7,
-    "response_time": 25,
+    "response_time": 33,
     "method": "astar"
   }
 ]
