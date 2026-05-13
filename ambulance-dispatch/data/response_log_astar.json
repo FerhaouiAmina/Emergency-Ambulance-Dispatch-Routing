@@ -21,7 +21,7 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 13,
+    "response_time": 17,
     "method": "astar"
   },
   {
@@ -36,7 +36,7 @@
   },
   {
     "emergency_id": 7,
-    "response_time": 25,
+    "response_time": 33,
     "method": "astar"
   }
 ]

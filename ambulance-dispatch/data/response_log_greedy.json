@@ -16,22 +16,22 @@
   },
   {
     "emergency_id": 3,
-    "response_time": 39,
-    "method": "greedy"
-  },
-  {
-    "emergency_id": 4,
-    "response_time": 13,
-    "method": "greedy"
-  },
-  {
-    "emergency_id": 5,
     "response_time": 27,
     "method": "greedy"
   },
   {
+    "emergency_id": 4,
+    "response_time": 26,
+    "method": "greedy"
+  },
+  {
+    "emergency_id": 5,
+    "response_time": 15,
+    "method": "greedy"
+  },
+  {
     "emergency_id": 6,
-    "response_time": 54,
+    "response_time": 30,
     "method": "greedy"
   },
   {
