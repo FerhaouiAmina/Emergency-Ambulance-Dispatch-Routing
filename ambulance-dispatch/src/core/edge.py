@@ -9,17 +9,21 @@ class Edge:
         self.to_node = to_node
         self.length = length  # meters
         self.highway = highway
-        self.speed_kph = speed_kph
+        self.speed_kph = max(speed_kph, 1.0)  # Ensure minimum speed to avoid division by zero
         self.oneway = oneway
         
         #Merged teh 2 functions since we need teh distance (new: length) in them
+    @property
+    def travel_time(self):
+        return self.get_travel_time()
+    
     def __repr__(self):
         return f"Edge({self.from_node}->{self.to_node},{self.length:.1f}m, {self.highway})"
     
     def get_travel_time(self, traffic_multiplier: float = 1.0) -> float:
         """Calculate travel time considering traffic"""
-        adjusted_speed = self.speed_limit / traffic_multiplier
-        return self.length / adjusted_speed if adjusted_speed > 0 else float('inf')
+        adjusted_speed = self.speed_kph / traffic_multiplier
+        return (self.length / 1000) / adjusted_speed * 60 if adjusted_speed > 0 else float('inf')
     
     #def to_dict(self) -> Dict[str, Any]:
     

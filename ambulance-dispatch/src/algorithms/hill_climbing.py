@@ -7,6 +7,7 @@ class HillClimbing:
     def __init__(self, graph, a_star_func):
         self.graph = graph
         self.a_star = a_star_func
+        self.convergence_history = []
     
     def fitness(self, standby_positions: List[int], emergencies: List[int]) -> float:
         """Calculate average response time for positions"""
@@ -80,7 +81,7 @@ class HillClimbing:
         
         return current, current_fitness, fitness_history
     
-    def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5) -> Tuple[List[int], float]:
+    def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5, max_iter: int = 100) -> Tuple[List[int], float]:
         """Perform hill climbing with random restarts"""
         best_positions = None
         best_fitness = float('inf')

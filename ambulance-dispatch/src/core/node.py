@@ -3,6 +3,8 @@ class Node:
         self.id = node_id
         self.lat = lat
         self.lon = lon
+        self.x = lon
+        self.y = lat
 
     def __repr__(self):
         return f"Node({self.id})"
