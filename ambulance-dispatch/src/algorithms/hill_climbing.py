@@ -48,7 +48,7 @@ class HillClimbing:
             if dist > 0:
                 nearby.add(current)
 
-            for neighbor, edge_id in self.graph.neighbors(current):  # ← unpack tuple
+            for neighbor, edge_id in self.graph.get_neighbors(current):  # ← unpack tuple
                 if neighbor not in visited:
                     to_visit.append((neighbor, dist + 1))
 
