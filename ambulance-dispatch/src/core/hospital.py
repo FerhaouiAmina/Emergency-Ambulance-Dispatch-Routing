@@ -1,18 +1,3 @@
-# class Hospital:
-#     def __init__(self, hid, node_id, name=""):
-#         self.id = hid
-#         self.node_id = node_id
-#         self.name = name
-
-#     def __repr__(self):
-#         return f"Hospital({self.id})"
-
-"""
-Hospital Implementation for Ambulance Dispatch
-Author: M3 (Pair B)
-Week 4 - Core Infrastructure
-"""
-
 from typing import Dict, Any, List
 
 
@@ -35,6 +20,9 @@ class Hospital:
         self.capacity = capacity
         self.current_load = 0
         self.waiting_ambulances = []
+        # Added by Member 6 for integration with graph
+        self.node_id = None
+        self.ftype = "medical"
     
     def admit_patient(self, ambulance_id: int) -> bool:
         """

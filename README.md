@@ -117,23 +117,25 @@ ambulance-dispatch-ai/
 │   │   ├── greedy_dispatch.py
 │   │   ├── astar_dispatch.py
 │   │   ├── hill_climbing.py
-│   │   └── standby_optimizer.py
+│   │   ├── simple_path.py
+│   │   └── standby_manager.py
 │   │
 │   ├── traffic/
-│   │   ├── traffic_model.py
-│   │   ├── congestion_updates.py
-│   │   └── rush_hour_rules.py
+│   │   └──traffic_model.py
 │   │
 │   ├── simulation/
 │   │   ├── event_queue.py
 │   │   ├── poisson_generator.py
 │   │   ├── surge_scenarios.py
+│   │   ├── dynamic_strategy.py
+│   │   ├── static_strategy.py
 │   │   └── dispatcher.py
 │   │
 │   ├── evaluation/
 │   │   ├── metrics.py
 │   │   ├── response_time_analysis.py
 │   │   ├── static_vs_dynamic.py
+│   │   ├── comparison_runner.py
 │   │   └── algorithm_comparison.py
 │   │
 │   └── visualization/
@@ -143,11 +145,9 @@ ambulance-dispatch-ai/
 │       └── dashboard.py
 │
 ├── data/
-│   ├── raw/
-│   │   ├── .gitkeep
+│   ├── map.json
 │   │
-│   ├── processed/
-│       ├── .gitkeep
+│   ├── script.py
 │
 ├── tests/
 │   ├── test_astar.py

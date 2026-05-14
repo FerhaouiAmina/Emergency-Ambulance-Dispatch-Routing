@@ -9,10 +9,14 @@ class Edge:
         self.to_node = to_node
         self.length = length  # meters
         self.highway = highway
-        self.speed_kph = speed_kph
+        self.speed_kph = max(speed_kph, 1.0)  # Ensure minimum speed to avoid division by zero
         self.oneway = oneway
         
         #Merged teh 2 functions since we need teh distance (new: length) in them
+    @property
+    def travel_time(self):
+        return self.get_travel_time()
+    
     def __repr__(self):
         return f"Edge({self.from_node}->{self.to_node},{self.length:.1f}m, {self.highway})"
     
@@ -39,4 +43,8 @@ class Edge:
     
     def __hash__(self) -> int:
         return hash((min(self.from_node, self.to_node), max(self.from_node, self.to_node)))
+
+    @property
+    def travel_time(self):
+        return (self.length / 1000) / self.speed_kph * 60  # minutes
 

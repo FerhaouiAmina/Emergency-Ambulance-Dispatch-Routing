@@ -4,53 +4,33 @@ import math
 from src.simulation.dispatcher import Dispatcher
 from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
-from src.algorithms.standby_optimizer import StandbyOptimizer
+from src.algorithms.StandbyManager import StandbyManager
+from src.algorithms.hill_climbing import HillClimbing
+from src.algorithms.astar import astar
 
 from src.core.hospital import Hospital
 from src.core.ambulance import Ambulance
 
 
 class SimulationEngine:
-    def __init__(self, duration, lambda_rate, grid_size=20, graph=None):
+    def __init__(self, duration, lambda_rate, graph):
         self.current_time = 0
         self.duration = duration
-        self.grid_size = grid_size
 
         self.graph = graph
-        if graph is not None and hasattr(graph, "nodes"):
-            self.graph_nodes = list(graph.nodes.keys())
-        else:
-            self.graph_nodes = list(range(grid_size * grid_size))
+        self.graph_nodes = list(graph.nodes.keys())
 
         self.event_queue = EventQueue()
 
-        self.generator = PoissonEmergencyGenerator(
-            lambda_rate=lambda_rate,
-            max_x=grid_size,
-            max_y=grid_size
-        )
+        self.generator = PoissonEmergencyGenerator.from_graph(lambda_rate, graph)
 
         self.processed_events = []
         self.hospitals = []
         self.depots = []
 
         self.dispatcher = Dispatcher(self.graph)
-        self.standby_optimizer = StandbyOptimizer(self.graph)
+        self.standby_optimizer = StandbyManager(HillClimbing(self.graph, lambda s, g: astar(s, g)[1]))
         self.ambulances = []
-
-    def place_facilities(self, num_hospitals=3, num_depots=2):
-        selected_nodes = random.sample(
-            self.graph_nodes,
-            min(num_hospitals + num_depots, len(self.graph_nodes))
-        )
-        hospital_nodes = selected_nodes[:num_hospitals]
-        depot_nodes = selected_nodes[num_hospitals:]
-
-        self.hospitals = [
-            Hospital(i + 1, node)
-            for i, node in enumerate(hospital_nodes)
-        ]
-        self.depots = depot_nodes
 
     def initialize_ambulances(self, num_ambulances=2):
         self.ambulances = []
@@ -59,24 +39,23 @@ class SimulationEngine:
             self.ambulances.append(Ambulance(id=i + 1, start_node=start_node))
 
     def initialize(self):
-        self.place_facilities()
+        self.hospitals = self.graph.hospitals
+        self.depots = [d['node_id'] for d in self.graph.depots]
         self.initialize_ambulances()
         first_event = self.generator.generate_next_arrival(0)
         self.event_queue.push(first_event)
 
     def emergency_to_node(self, event):
-        if self.graph is not None and hasattr(self.graph, "nodes"):
-            best_node = None
-            best_dist = float("inf")
-            for node_id, node_data in self.graph.nodes.items():
-                nx = node_data.get("x", 0)
-                ny = node_data.get("y", 0)
-                dist = math.sqrt((nx - event.x) ** 2 + (ny - event.y) ** 2)
-                if dist < best_dist:
-                    best_dist = dist
-                    best_node = node_id
-            return best_node
-        return int(event.x) * self.grid_size + int(event.y)
+        best_node = None
+        best_dist = float("inf")
+        for node_id, node_data in self.graph.nodes.items():
+            nx = node_data.x
+            ny = node_data.y
+            dist = math.sqrt((nx - event.x) ** 2 + (ny - event.y) ** 2)
+            if dist < best_dist:
+                best_dist = dist
+                best_node = node_id
+        return best_node
 
     def dispatch_ambulance(self, event):
         emergency_node = self.emergency_to_node(event)
@@ -107,8 +86,6 @@ class SimulationEngine:
         self.dispatch_ambulance(event)
 
     def run(self):
-        self.initialize()
-
         while self.current_time < self.duration:
             next_event = self.event_queue.peek()
             if next_event is None:
@@ -116,11 +93,14 @@ class SimulationEngine:
 
             self.current_time = next_event.timestamp
             event = self.event_queue.pop()
+            if event is None:
+                break
 
+            emergency_node = self.emergency_to_node(event)
             print(
                 f"[{self.current_time:.2f}] "
                 f"Emergency at ({event.x:.2f}, {event.y:.2f}) "
-                f"-> node {self.emergency_to_node(event)}"
+                f"-> node {emergency_node}"
             )
 
             self.process_event(event)
@@ -138,11 +118,10 @@ class SimulationEngine:
             return
 
         candidate_nodes = self.get_candidate_nodes()
-        optimal_positions = self.standby_optimizer.compute_optimal_positions(
-            idle_ambulances, candidate_nodes
-        )
+        emergencies = [e.node for e in self.processed_events if hasattr(e, 'node')]
+        positions = self.standby_optimizer.compute_positions(emergencies, len(idle_ambulances))
 
-        for amb, node in zip(idle_ambulances, optimal_positions):
+        for amb, node in zip(idle_ambulances, positions):
             amb.target_node = node
             amb.path = [node]
             amb.path_index = 0

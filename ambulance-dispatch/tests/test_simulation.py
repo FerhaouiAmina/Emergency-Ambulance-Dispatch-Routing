@@ -1,4 +1,5 @@
 from src.core.simulation_engine import SimulationEngine
+import math
 
 
 def test_dispatch_integration():

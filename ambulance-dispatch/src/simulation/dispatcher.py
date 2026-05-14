@@ -62,8 +62,8 @@ class Dispatcher:
             if em_data:
                 def euclidean(amb):
                     nd = self.graph.nodes.get(amb.current_node, {})
-                    dx = nd.get("x", 0) - em_data.get("x", 0)
-                    dy = nd.get("y", 0) - em_data.get("y", 0)
+                    dx = nd.x - em_data.x if hasattr(nd, 'x') else 0
+                    dy = nd.y - em_data.y if hasattr(nd, 'y') else 0
                     return math.sqrt(dx * dx + dy * dy)
                 return min(available, key=euclidean)
 
