@@ -1,8 +1,7 @@
 import json
-
-from src.core.node import Node
-from src.core.edge import Edge
-from src.core.hospital import Hospital
+from .node import Node
+from .edge import Edge
+from .hospital import Hospital
 
 
 
