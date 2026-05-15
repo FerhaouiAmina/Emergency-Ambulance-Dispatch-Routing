@@ -4,7 +4,7 @@ import math
 from src.simulation.dispatcher import Dispatcher
 from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
-from src.algorithms.StandbyManager import StandbyManager
+from src.algorithms.standby_manager import StandbyManager
 from src.algorithms.hill_climbing import HillClimbing
 from src.algorithms.astar import astar
 

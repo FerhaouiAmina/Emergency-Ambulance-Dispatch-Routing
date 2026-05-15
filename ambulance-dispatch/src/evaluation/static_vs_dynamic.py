@@ -1,8 +1,8 @@
 import json
 import numpy as np
 from typing import List, Dict
-from ..algorithms.hill_climbing import HillClimbing
-from ..core.astar import fake_a_star
+from src.algorithms.hill_climbing import HillClimbing
+from src.algorithms.astar import fake_a_star
 import matplotlib.pyplot as plt
 
 

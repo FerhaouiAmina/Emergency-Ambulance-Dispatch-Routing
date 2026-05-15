@@ -1,8 +1,0 @@
-{
-  "hospitals": [
-    {"id": 1, "node_id": 26616005, "name": "Central Hospital"},
-    {"id": 2, "node_id": 26616610, "name": "North Hospital"},
-    {"id": 3, "node_id": 26616617, "name": "East Hospital"}
-  ]
-}
-

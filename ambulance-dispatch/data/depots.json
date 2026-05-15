@@ -1,8 +1,0 @@
-{
-  "depots": [
-    {"id": 1, "node_id": 26616005, "name": "Central Depot"},
-    {"id": 2, "node_id": 26616610, "name": "West Depot"},
-    {"id": 3, "node_id": 26616617, "name": "South Depot"}
-  ]
-}
-
