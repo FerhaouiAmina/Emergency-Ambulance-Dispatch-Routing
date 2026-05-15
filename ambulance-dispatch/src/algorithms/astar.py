@@ -21,6 +21,7 @@ def haversine_km(lat1, lon1, lat2, lon2):
 def heuristic(a, b):
     n1 = G.nodes[a]
     n2 = G.nodes[b]
+
     dist_km = haversine_km(n1.lat, n1.lon, n2.lat, n2.lon)
     return (dist_km / FREE_FLOW_KMH) * 60.0
 

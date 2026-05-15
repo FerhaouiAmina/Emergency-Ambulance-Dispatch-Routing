@@ -26,7 +26,7 @@
   },
   {
     "emergency_id": 5,
-    "response_time": 23,
+    "response_time": 54,
     "method": "greedy"
   },
   {
@@ -38,85 +38,5 @@
     "emergency_id": 7,
     "response_time": 33,
     "method": "greedy"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 92.52744653294292,
-    "method": "static"
-  },
-  {
-    "response_time": 47.05628841346197,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 59.032255402219405,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 83.3276544267732,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 61.17487344341392,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 70.390513302004,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 64.92796198229371,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 31.280800852270065,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 57.07225622418655,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 43.72674221153969,
-    "method": "dynamic"
-  },
-  {
-    "response_time": 42.798264776110294,
-    "method": "dynamic"
   }
 ]
