@@ -70,7 +70,7 @@ source .venv/bin/activate
 ---
 ## Running the Simulation
 ```
-python -m src.main
+python -m map_animation.py
 ```
 ---
 ## Evaluation Metrics
