@@ -34,7 +34,7 @@ def build_emergencies():
     ]
 
 
-# HC uses straight-line distance — fast enough for 170K nodes
+
 def hc_distance(a, b):
     na = graph.nodes[a]
     nb = graph.nodes[b]
@@ -43,7 +43,7 @@ def hc_distance(a, b):
 
 emergencies = build_emergencies()  # built once, shared between both runs
 
-# ── Run 1: Greedy ─────────────────────────────────────────
+# Run 1: Greedy
 print("\n" + "="*50)
 print("RUN 1: GREEDY DISPATCH")
 print("="*50)
@@ -58,7 +58,7 @@ sim_greedy = Simulation(
 sim_greedy.schedule(emergencies)
 sim_greedy.run(max_time=1000)
 
-# ── Run 2: A* ─────────────────────────────────────────────
+#Run 2: A* 
 print("\n" + "="*50)
 print("RUN 2: A* DISPATCH")
 print("="*50)
@@ -67,16 +67,28 @@ sim_astar = Simulation(
     graph         = graph,
     ambulances    = build_ambulances(),   # fresh ambulances, same start positions
     hospitals     = hospitals,
-    hill_climbing = HillClimbing(graph, hc_distance),  # fresh HC instance
+    hill_climbing = HillClimbing(graph, hc_distance), 
     mode          = "astar"
 )
-sim_astar.schedule(emergencies)           # same emergencies — fair comparison
+sim_astar.schedule(emergencies)         
 sim_astar.run(max_time=1000)
 
-# ── Merge logs ────────────────────────────────────────────
+# Merge logs
 greedy_log = json.load(open("data/response_log_greedy.json"))
 astar_log  = json.load(open("data/response_log_astar.json"))
-combined   = greedy_log + astar_log
 
-json.dump(combined, open("data/response_log_all.json", "w"), indent=2)
-print(f"\nDone. {len(combined)} total dispatches logged.")
+combined = greedy_log + astar_log
+# only deduplicate greedy and astar, keep all static/dynamic
+seen = set()
+deduped = []
+for r in combined:
+    if r["method"] in ("static", "dynamic"):
+        deduped.append(r)  # keep all
+    else:
+        key = (r["method"], round(r["response_time"], 4))
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+json.dump(deduped, open("data/response_log_all.json", "w"), indent=2) 
+print(f"\nDone. {len(deduped)} total dispatches logged.")
+

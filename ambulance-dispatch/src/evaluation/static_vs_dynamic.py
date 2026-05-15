@@ -2,7 +2,7 @@ import json
 import numpy as np
 from typing import List, Dict
 from ..algorithms.hill_climbing import HillClimbing
-from ..core.astar import fake_a_star
+from ..algorithms.astar import fake_a_star
 import matplotlib.pyplot as plt
 
 
@@ -40,7 +40,9 @@ class StaticVsDynamicEvaluator:
         
         return {
             'static_avg': np.mean(static_times),
-            'dynamic_avg': np.mean(dynamic_times)
+            'dynamic_avg': np.mean(dynamic_times),
+            'static_times': static_times,
+            'dynamic_times': dynamic_times
         }
     
     def static_strategy(self, emergencies, depot_positions):

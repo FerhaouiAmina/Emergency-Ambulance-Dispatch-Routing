@@ -82,15 +82,23 @@ def fake_a_star(a, b, traffic_multiplier=1.0):
     Returns weighted distance without pathfinding
     """
     # Find nodes to get lat/lon
-    n1 = next((n for n in map_data['nodes'] if n['id'] == a), None)
-    n2 = next((n for n in map_data['nodes'] if n['id'] == b), None)
+    #n1 = next((n for n in map_data['nodes'] if n['id'] == a), None)
+    #n2 = next((n for n in map_data['nodes'] if n['id'] == b), None)
     
+    #if n1 is None or n2 is None:
+    #    return abs(a - b) * 1.5 * traffic_multiplier
+    
+    #dist_km = haversine_km(n1['lat'], n1['lon'], n2['lat'], n2['lon'])
+    # Convert distance to travel time in minutes (distance km / speed km/h * 60)
+    #travel_time = (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier
+    #return travel_time
+    n1 = G.nodes.get(a)
+    n2 = G.nodes.get(b)
+
     if n1 is None or n2 is None:
         return abs(a - b) * 1.5 * traffic_multiplier
-    
-    dist_km = haversine_km(n1['lat'], n1['lon'], n2['lat'], n2['lon'])
-    # Convert distance to travel time in minutes (distance km / speed km/h * 60)
-    travel_time = (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier
-    return travel_time
+
+    dist_km = haversine_km(n1.lat, n1.lon, n2.lat, n2.lon)
+    return (dist_km / FREE_FLOW_KMH) * 60.0
 
 print("A* ready.")

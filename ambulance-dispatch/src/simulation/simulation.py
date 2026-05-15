@@ -4,8 +4,11 @@ from src.algorithms.greedy_disparch import DispatchSystem
 from src.algorithms.hill_climbing import HillClimbing
 from src.algorithms.astar import astar
 from src.algorithms.astar_dispatch import astar_dispatch
+from src.evaluation.static_vs_dynamic import StaticVsDynamicEvaluator
+from src.algorithms.astar import fake_a_star
 import json
 import math
+
 
 
 class Simulation:
@@ -55,6 +58,16 @@ class Simulation:
 
         self.hc_history = fitness_history
         print(f"HC done: {len(fitness_history)} iterations")
+
+        evaluator = StaticVsDynamicEvaluator(self.hill_climbing, self.graph, fake_a_star)
+        results = evaluator.run_comparison(num_ambulances=len(self.ambulances))
+
+        for t in results['static_times']:
+            self.dispatch.response_log.append({"response_time": t * 60, "method": "static"})
+        for t in results['dynamic_times']:
+            self.dispatch.response_log.append({"response_time": t * 60, "method": "dynamic"}) # ticks
+
+        self.save_log()
 
 
     def _process_events(self):

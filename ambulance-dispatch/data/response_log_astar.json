@@ -21,7 +21,7 @@
   },
   {
     "emergency_id": 4,
-    "response_time": 17,
+    "response_time": 13,
     "method": "astar"
   },
   {
@@ -38,5 +38,85 @@
     "emergency_id": 7,
     "response_time": 33,
     "method": "astar"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 92.52744653294292,
+    "method": "static"
+  },
+  {
+    "response_time": 49.402786376104885,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 89.78528187670503,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 79.80147644550564,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 59.91557821986903,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 59.15248386493287,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 47.87557414563019,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 72.71861723796073,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 47.81324877031437,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 58.882250616891696,
+    "method": "dynamic"
+  },
+  {
+    "response_time": 83.91402475521879,
+    "method": "dynamic"
   }
 ]

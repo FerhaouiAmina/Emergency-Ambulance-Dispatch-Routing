@@ -12,56 +12,78 @@ def plot_response_histogram(log_path="data/response_log_all.json"):
         print("No response data found")
         return
 
-    methods = ["greedy", "astar"]
-    colors  = ["steelblue", "tomato"]
-    labels  = ["Greedy Dispatch", "A* Dispatch"]
+    greedy_times  = [r["response_time"] for r in data if r.get("method") == "greedy"  and "response_time" in r]
+    astar_times   = [r["response_time"] for r in data if r.get("method") == "astar"   and "response_time" in r]
+    static_times  = [r["response_time"] for r in data if r.get("method") == "static"  and "response_time" in r]
+    dynamic_times = [r["response_time"] for r in data if r.get("method") == "dynamic" and "response_time" in r]
 
-    greedy_times = [r["response_time"] for r in data if r.get("method") == "greedy" and "response_time" in r]
-    astar_times  = [r["response_time"] for r in data if r.get("method") == "astar"  and "response_time" in r]
-
-    if not greedy_times and not astar_times:
+    if not any([greedy_times, astar_times, static_times, dynamic_times]):
         print("No response data found for any method")
         return
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(20, 6))
     fig.suptitle("Emergency Dispatch — Response Time Analysis", fontsize=14, fontweight="bold")
 
-    # ── Left: overlaid histogram ──────────────────────────
+    # ── Left: Greedy vs A* ──────────────────────────────
     ax = axes[0]
-    all_times = greedy_times + astar_times
-    bins = np.linspace(min(all_times), max(all_times), 15) if all_times else 10
-
-    if greedy_times:
-        ax.hist(greedy_times, bins=bins, alpha=0.6,
-                label=f"Greedy (n={len(greedy_times)})", color="steelblue", edgecolor="white")
-    if astar_times:
-        ax.hist(astar_times, bins=bins, alpha=0.6,
-                label=f"A* Dispatch (n={len(astar_times)})", color="tomato", edgecolor="white")
-
-    ax.set_title("Response Time Distribution")
+    ax.set_title("Dispatch Strategy: Greedy vs A*")
+    if greedy_times or astar_times:
+        ga_times = greedy_times + astar_times
+        bins = np.linspace(min(ga_times), max(ga_times), 15)
+        if greedy_times:
+            ax.hist(greedy_times, bins=bins, alpha=0.7,
+                    label=f"Greedy (n={len(greedy_times)})",
+                    color="steelblue", edgecolor="white")
+        if astar_times:
+            ax.hist(astar_times, bins=bins, alpha=0.7,
+                    label=f"A* Dispatch (n={len(astar_times)})",
+                    color="tomato", edgecolor="white")
     ax.set_xlabel("Response Time (ticks)")
     ax.set_ylabel("Number of Emergencies")
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.4)
 
-    # ── Right: summary bar chart (avg response time) ──────
+    # ── Middle: Static vs Dynamic ────────────────────────
     ax2 = axes[1]
-    method_data = {"Greedy": greedy_times, "A*": astar_times}
-    avgs  = [np.mean(t) if t else 0 for t in method_data.values()]
-    names = list(method_data.keys())
-    bars  = ax2.bar(names, avgs, color=["steelblue", "tomato"],
-                    edgecolor="white", width=0.4)
+    ax2.set_title("Stationing Strategy: Static vs Dynamic HC")
+    if static_times or dynamic_times:
+        sd_times = static_times + dynamic_times
+        bins2 = np.linspace(min(sd_times), max(sd_times), 15)
+        if static_times:
+            ax2.hist(static_times, bins=bins2, alpha=0.7,
+                     label=f"Static (n={len(static_times)})",
+                     color="mediumseagreen", edgecolor="white")
+        if dynamic_times:
+            ax2.hist(dynamic_times, bins=bins2, alpha=0.7,
+                     label=f"Dynamic HC (n={len(dynamic_times)})",
+                     color="gold", edgecolor="white")
+    ax2.set_xlabel("Response Time (ticks)")
+    ax2.set_ylabel("Number of Emergencies")
+    ax2.legend()
+    ax2.grid(axis="y", linestyle="--", alpha=0.4)
 
-    # label each bar with its value
+    # ── Right: Average bar chart all 4 ──────────────────
+    ax3 = axes[2]
+    ax3.set_title("Average Response Time by Method")
+    method_data = {
+        "Greedy":  greedy_times,
+        "A*":      astar_times,
+        "Static":  static_times,
+        "Dynamic": dynamic_times
+    }
+    avgs   = [np.mean(t) if t else 0 for t in method_data.values()]
+    names  = list(method_data.keys())
+    colors = ["steelblue", "tomato", "mediumseagreen", "gold"]
+    bars   = ax3.bar(names, avgs, color=colors, edgecolor="white", width=0.4)
+
     for bar, avg in zip(bars, avgs):
-        ax2.text(bar.get_x() + bar.get_width() / 2,
+        ax3.text(bar.get_x() + bar.get_width() / 2,
                  bar.get_height() + 0.5,
                  f"{avg:.1f}", ha="center", va="bottom", fontweight="bold")
 
-    ax2.set_title("Average Response Time by Method")
-    ax2.set_ylabel("Avg Response Time (ticks)")
-    ax2.set_ylim(0, max(avgs) * 1.3 if avgs else 10)
-    ax2.grid(axis="y", linestyle="--", alpha=0.4)
+    ax3.set_ylabel("Avg Response Time (ticks)")
+    ax3.set_ylim(0, max(avgs) * 1.3 if avgs else 10)
+    ax3.grid(axis="y", linestyle="--", alpha=0.4)
 
     plt.tight_layout()
     plt.savefig("data/response_histogram.png", dpi=150)
@@ -69,13 +91,11 @@ def plot_response_histogram(log_path="data/response_log_all.json"):
     plt.close()
     print("Saved → data/response_histogram.png")
 
-    # print summary to terminal
-    print("\n── Response Time Summary ──────────────────")
+    print("\n── Response Time Summary ────")
     for name, times in method_data.items():
         if times:
             print(f"  {name:10s} | avg={np.mean(times):.2f} "
                   f"min={min(times):.2f}  max={max(times):.2f}  n={len(times)}")
-
 
 def plot_hc_convergence(history_path="data/hc_history.json"):
     with open(history_path) as f:
@@ -91,7 +111,7 @@ def plot_hc_convergence(history_path="data/hc_history.json"):
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     fig.suptitle("Hill Climbing — Standby Position Optimisation", fontsize=14, fontweight="bold")
 
-    # ── Left: convergence line ────────────────────────────
+    # Left: convergence line
     ax = axes[0]
     ax.plot(history, color="darkorange", linewidth=2, marker="o", markersize=4)
     ax.axhline(y=min(history), color="gray", linestyle="--",
@@ -102,7 +122,7 @@ def plot_hc_convergence(history_path="data/hc_history.json"):
     ax.legend()
     ax.grid(linestyle="--", alpha=0.4)
 
-    # ── Right: improvement bar (first vs last fitness) ────
+    #  Right: improvement bar (first vs last fitness) 
     ax2 = axes[1]
     initial = history[0]
     final   = history[-1]
@@ -126,7 +146,7 @@ def plot_hc_convergence(history_path="data/hc_history.json"):
     plt.close()
     print("Saved → data/hc_convergence.png")
 
-    print("\n── HC Summary ─────────────────────────────")
+    print("\n── HC Summary ───────")
     print(f"  Iterations : {len(history)}")
     print(f"  Initial    : {initial:.2f}")
     print(f"  Final      : {final:.2f}")
