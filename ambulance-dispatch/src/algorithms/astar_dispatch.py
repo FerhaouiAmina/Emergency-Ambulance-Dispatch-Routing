@@ -100,7 +100,12 @@ def astar_dispatch(
 
 
         #path, cost = astar(amb.current_node, emergency_node, graph, edge_weights)
-        path, cost = astar(amb.current_node, emergency_node)
+        path, cost = astar(
+            amb.current_node,
+            emergency_node,
+            graph,
+            edge_weights
+        )
 
         if not path:
             continue
@@ -165,7 +170,12 @@ def dispatch_with_hospital(
     hospital_paths: Dict[Any, tuple] = {}
     for hospital in hospital_nodes:
         #path2, cost2 = astar(emergency_node, hospital, graph, edge_weights)
-        path2, cost2 = astar(emergency_node, hospital)
+        path2, cost2 = astar(
+            emergency_node,
+            hospital,
+            graph,
+            edge_weights
+        )
 
         if path2:
             hospital_paths[hospital] = (path2, cost2)
