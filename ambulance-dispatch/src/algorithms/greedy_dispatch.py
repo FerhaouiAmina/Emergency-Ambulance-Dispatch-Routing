@@ -1,49 +1,101 @@
 import math
+from src.algorithms.astar_dispatch import DispatchResult
+
 
 class greedy_dispatch:
+    """
+    Greedy baseline dispatcher:
+    assigns the closest ambulance using Euclidean distance.
+    """
+
     def __init__(self, ambulances, hospitals, graph):
         self.ambulances = ambulances
         self.hospitals = hospitals
         self.graph = graph
-        self.response_log = [] #keeps track of response times
+        self.response_log = []
 
+    # =========================================================
+    # DISTANCE
+    # =========================================================
 
     def euclidean_distance(self, node_a, node_b):
-        
-        a = self.graph.nodes.get(node_a) #node_a is an id
+        a = self.graph.nodes.get(node_a)
         b = self.graph.nodes.get(node_b)
+
+        if a is None or b is None:
+            return math.inf
+
         return math.sqrt((a.lat - b.lat) ** 2 + (a.lon - b.lon) ** 2)
 
+    # =========================================================
+    # MAIN DISPATCH
+    # =========================================================
 
     def greedy_dispatch(self, emergency, current_time, path_fn):
-        available = [a for a in self.ambulances if a.is_available()] #Creates a list of ambulances that are free
+
+        result = DispatchResult()
+
+        emergency_node = getattr(emergency, "node", None)
+        if emergency_node is None:
+            result.success = False
+            result.failure_reason = "invalid_emergency_node"
+            return result
+
+        available = [
+            a for a in self.ambulances
+            if a.is_available()
+        ]
 
         if not available:
-            print(f"[t={current_time}] No ambulance available for emergency {emergency.event_id}")
-            return None
+            result.success = False
+            result.failure_reason = "all_busy"
+            return result
 
-        # Choose closest
+        # choose closest ambulance
         chosen = min(
             available,
-            key=lambda a: self.euclidean_distance(a.current_node, emergency.node)
+            key=lambda a: self.euclidean_distance(
+                a.current_node,
+                emergency_node
+            )
         )
 
-        # Compute distance BEFORE dispatch
-        dist = self.euclidean_distance(chosen.current_node, emergency.node)
+        dist = self.euclidean_distance(
+            chosen.current_node,
+            emergency_node
+        )
 
-        # Compute path
-        path = path_fn(chosen.current_node, emergency.node)
+        path = path_fn(
+            chosen.current_node,
+            emergency_node
+        )
 
-        # Dispatch
-        chosen.dispatch(emergency.node, path, emergency, current_time)
+        chosen.dispatch(
+            emergency_node,
+            path,
+            emergency,
+            current_time
+        )
 
-        print(f"[t={current_time}] Greedy → Ambulance {chosen.id} "
-              f"→ Emergency {emergency.event_id} (dist={dist:.2f})")
+        result.ambulance = chosen
+        result.success = True
+        result.predicted_eta = dist
+        result.path_to_scene = path
 
-        return chosen
+        print(
+            f"[t={current_time}] Greedy → Ambulance {chosen.id} "
+            f"→ Emergency {getattr(emergency, 'event_id', '?')} "
+            f"(dist={dist:.2f})"
+        )
 
+        return result
+
+    # =========================================================
+    # HOSPITAL
+    # =========================================================
 
     def nearest_hospital(self, node, path_fn):
+
         if not self.hospitals:
             return None, []
 
@@ -55,6 +107,9 @@ class greedy_dispatch:
         path = path_fn(node, best_hospital.node_id)
         return best_hospital, path
 
+    # =========================================================
+    # LOGGING
+    # =========================================================
 
     def log_response(self, emergency_id, dispatch_time, arrival_time, method="greedy"):
         response_time = arrival_time - dispatch_time
@@ -65,10 +120,8 @@ class greedy_dispatch:
             "method": method
         })
 
-        print(f" Response time: {response_time} ticks [{method}]")
-
-
     def average_response_time(self, method=None):
+
         logs = self.response_log
 
         if method:
