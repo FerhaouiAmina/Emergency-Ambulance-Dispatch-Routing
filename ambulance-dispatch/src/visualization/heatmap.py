@@ -160,7 +160,7 @@ def plot_heatmap(time_of_day="morning_peak", max_edges=30000):
         (0.35,(0.90,0.35,0.00,0.22)),(0.65,(1.00,0.20,0.00,0.45)),
         (1.00,(1.00,0.05,0.00,0.70))],N=512)
     ax.imshow(hg,origin="lower",aspect="auto",
-              extent=[min_lon,max_lon,min_lat,max_lat],
+              extent=(min_lon,max_lon,min_lat,max_lat),
               cmap=cmap_h,zorder=8,interpolation="bilinear")
 
     # ── Facilities ────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ def plot_heatmap(time_of_day="morning_peak", max_edges=30000):
     # ── Colorbar ──────────────────────────────────────────────────────────────
     ax_cb.set_facecolor("#080c12")
     rgba = np.array([_ccolor(v) for v in np.linspace(0,1,256)]).reshape(256,1,4)
-    ax_cb.imshow(rgba,origin="lower",aspect="auto",extent=[0,1,0,1])
+    ax_cb.imshow(rgba,origin="lower",aspect="auto",extent=(0,1,0,1))
     ax_cb.set_xticks([]); ax_cb.set_yticks([0,0.5,1])
     ax_cb.set_yticklabels(["Free flow","Moderate","Congested"],fontsize=7.5,color="#99bbcc")
     ax_cb.yaxis.set_tick_params(length=0); ax_cb.tick_params(axis="y",pad=6)

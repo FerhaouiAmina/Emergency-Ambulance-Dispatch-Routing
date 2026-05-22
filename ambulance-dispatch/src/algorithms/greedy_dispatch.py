@@ -1,6 +1,66 @@
 import math
+from typing import List, Any
 
-class greedy_dispatch:
+from src.algorithms.astar import _haversine_minutes, astar
+from src.algorithms.astar_dispatch import DispatchResult
+
+
+def greedy_dispatch(
+    ambulances: List,
+    emergency_node: Any,
+    graph,
+    edge_weights=None,
+) -> DispatchResult:
+    """
+    Greedy dispatch: pick the available ambulance with minimum
+    straight-line estimate, then score with A* road travel time.
+    """
+    result = DispatchResult()
+    any_available = False
+    best_h = math.inf
+    pick = None
+
+    if emergency_node not in graph.nodes:
+        result.failure_reason = "no_path"
+        return result
+
+    em = graph.nodes[emergency_node]
+
+    for amb in ambulances:
+        if not (getattr(amb, "available", None) or getattr(amb, "is_available", lambda: False)()):
+            continue
+        any_available = True
+        if amb.current_node not in graph.nodes:
+            continue
+
+        n = graph.nodes[amb.current_node]
+        h = _haversine_minutes(n.lat, n.lon, em.lat, em.lon)
+        amb_id = getattr(amb, "id", math.inf)
+        best_id = getattr(pick, "id", math.inf) if pick else math.inf
+
+        if h < best_h or (h == best_h and amb_id < best_id):
+            best_h = h
+            pick = amb
+
+    if pick is not None:
+        path, cost = astar(pick.current_node, emergency_node, graph, edge_weights)
+        if path:
+            result.ambulance = pick
+            result.path_to_scene = path
+            result.cost_to_scene = cost
+            result.total_cost = cost
+
+    if result.ambulance is not None:
+        result.success = True
+    elif not any_available:
+        result.failure_reason = "all_busy"
+    else:
+        result.failure_reason = "no_path"
+
+    return result
+
+
+class GreedyDispatcher:
     def __init__(self, ambulances, hospitals, graph):
         self.ambulances = ambulances
         self.hospitals = hospitals
@@ -46,13 +106,20 @@ class greedy_dispatch:
     def nearest_hospital(self, node, path_fn):
         if not self.hospitals:
             return None, []
+        # Support hospitals represented as objects with 'node_id' or 'node',
+        # or as raw node ids.
+        def hospital_node_id(h):
+            if hasattr(h, "node_id"):
+                return getattr(h, "node_id")
+            if hasattr(h, "node"):
+                return getattr(h, "node")
+            # assume h itself is a node id
+            return h
 
-        best_hospital = min(
-            self.hospitals,
-            key=lambda h: self.euclidean_distance(node, h.node_id)
-        )
+        best_hospital = min(self.hospitals, key=lambda h: self.euclidean_distance(node, hospital_node_id(h)))
 
-        path = path_fn(node, best_hospital.node_id)
+        best_node = hospital_node_id(best_hospital)
+        path = path_fn(node, best_node)
         return best_hospital, path
 
 

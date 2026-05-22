@@ -1,6 +1,6 @@
 
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 class HillClimbing:
@@ -11,20 +11,39 @@ class HillClimbing:
     
     def fitness(self, standby_positions: List[int], emergencies: List[int]) -> float:
         """Calculate average response time for positions"""
+
         total = 0
+
+        # cache reused across evaluations
+        if not hasattr(self, "_distance_cache"):
+            self._distance_cache = {}
+
         for emergency in emergencies:
+
             min_dist = float('inf')
+
             for pos in standby_positions:
-                dist = self.a_star(pos, emergency)
+
+                key = (pos, emergency)
+
+                if key in self._distance_cache:
+                    dist = self._distance_cache[key]
+
+                else:
+                    dist = self.a_star(pos, emergency)
+                    self._distance_cache[key] = dist
+
                 min_dist = min(min_dist, dist)
+
             total += min_dist
+
         return total / len(emergencies)
     
     def random_state(self, num_ambulances: int) -> List[int]:
         """Generate random initial positions"""
         return random.sample(list(self.graph.nodes.keys()), num_ambulances)
     
-    def get_neighbors(self, state: List[int], radius: int = 2) -> List[List[int]]:
+    def get_neighbors(self, state: List[int], radius: int = 1) -> List[List[int]]:
         """Generate neighboring states"""
         neighbors = []
         for i, pos in enumerate(state):
@@ -49,13 +68,18 @@ class HillClimbing:
             if dist > 0:
                 nearby.add(current)
 
-            for neighbor, edge_id in self.graph.get_neighbors(current):  # ← unpack tuple
+            neighbors = (
+                self.graph.neighbors(current)
+                if hasattr(self.graph, "neighbors")
+                else self.graph.get(current, [])
+            )
+            for neighbor, _edge_id in neighbors:
                 if neighbor not in visited:
                     to_visit.append((neighbor, dist + 1))
 
         return list(nearby)
     
-    def climb(self, emergencies: List[int], num_ambulances: int, max_iter: int = 100) -> Tuple[List[int], float]:
+    def climb(self, emergencies: List[int], num_ambulances: int, max_iter: int = 100) -> Tuple[List[int], float, List[float]]:
         """Perform hill climbing optimization"""
         current = self.random_state(num_ambulances)
         current_fitness = self.fitness(current, emergencies)
@@ -63,7 +87,11 @@ class HillClimbing:
         
         for iteration in range(max_iter):
             neighbors = self.get_neighbors(current)
-            best_neighbor = None
+            # HARD CAP
+            if len(neighbors) > 20:
+                neighbors = random.sample(neighbors, 20)
+            #
+            best_neighbor = current
             best_fitness = current_fitness
             
             for neighbor in neighbors:
@@ -83,10 +111,10 @@ class HillClimbing:
     
     def random_restart(self, emergencies: List[int], num_ambulances: int, restarts: int = 5, max_iter: int = 100) -> Tuple[List[int], float]:
         """Perform hill climbing with random restarts"""
-        best_positions = None
+        best_positions: List[int] = []
         best_fitness = float('inf')
         self.convergence_history = []
-        
+        self._distance_cache = {}
         for restart in range(restarts):
             positions, fitness, history = self.climb(emergencies, num_ambulances)
             self.convergence_history.extend(history)

@@ -92,7 +92,7 @@ def astar_dispatch(
     for amb in ambulances:
 
         # Only consider available ambulances
-        if not getattr(amb, "available", False):
+        if not (getattr(amb, "available", None) or getattr(amb, "is_available", lambda: False)()):
             continue
 
         any_available = True
@@ -186,7 +186,7 @@ def dispatch_with_hospital(
 
     # ── Find best (ambulance, hospital) pair ──
     for amb in ambulances:
-        if not getattr(amb, "available", False):
+        if not (getattr(amb, "available", None) or getattr(amb, "is_available", lambda: False)()):
             continue
 
         any_available = True

@@ -6,10 +6,11 @@ from src.simulation.event_queue import EventQueue
 from src.simulation.poisson_generator import PoissonEmergencyGenerator
 from src.algorithms.standby_manager import StandbyManager
 from src.algorithms.hill_climbing import HillClimbing
-from src.algorithms.astar import astar
+from src.algorithms.astar import astar, nearest_node
 
 from src.core.hospital import Hospital
 from src.core.ambulance import Ambulance
+from src.core.depot_utils import depot_node_id
 
 
 class SimulationEngine:
@@ -29,13 +30,13 @@ class SimulationEngine:
         self.depots = []
 
         self.dispatcher = Dispatcher(self.graph)
-        self.standby_optimizer = StandbyManager(HillClimbing(self.graph, lambda s, g: astar(s, g)[1]))
+        self.standby_optimizer = StandbyManager(HillClimbing(self.graph, lambda s, g: astar(s, g, self.graph)[1]))
         self.ambulances = []
 
     def initialize_ambulances(self, num_ambulances=2):
         self.ambulances = []
         for i in range(num_ambulances):
-            start_node = self.depots[i % len(self.depots)]
+            start_node = depot_node_id(self.depots[i % len(self.depots)])
             self.ambulances.append(Ambulance(id=i + 1, start_node=start_node))
 
     def initialize(self):
@@ -46,16 +47,7 @@ class SimulationEngine:
         self.event_queue.push(first_event)
 
     def emergency_to_node(self, event):
-        best_node = None
-        best_dist = float("inf")
-        for node_id, node_data in self.graph.nodes.items():
-            nx = node_data.x
-            ny = node_data.y
-            dist = math.sqrt((nx - event.x) ** 2 + (ny - event.y) ** 2)
-            if dist < best_dist:
-                best_dist = dist
-                best_node = node_id
-        return best_node
+        return nearest_node(event.y, event.x, self.graph)
 
     def dispatch_ambulance(self, event):
         emergency_node = self.emergency_to_node(event)

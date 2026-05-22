@@ -1,10 +1,10 @@
+from statistics import mean, stdev
+from typing import Dict, List, Optional
 import math
-from statistics import mean
-from typing import List, Optional
-
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import numpy as np
+from matplotlib.figure import Figure
 
 
 # Shared palette — both methods use the same colour across every plot
@@ -32,7 +32,7 @@ class ResponseTimeAnalysis:
         astar_times:  List[float],
         bins:         int  = 15,
         save_path:    Optional[str] = None,
-    ) -> plt.Figure:
+    ) -> Optional[Figure]:
         """
         Overlapping response-time frequency histogram.
 
@@ -80,7 +80,7 @@ class ResponseTimeAnalysis:
         greedy_times: List[float],
         astar_times:  List[float],
         save_path:    Optional[str] = None,
-    ) -> plt.Figure:
+    ) -> Optional[Figure]:
         """
         Side-by-side boxplot comparison.
 
@@ -101,13 +101,14 @@ class ResponseTimeAnalysis:
             data.append(astar_times);   labels.append("A*");     colors.append(_COLOR_ASTAR)
 
         fig, ax = plt.subplots(figsize=(8, 6))
-        bp = ax.boxplot(data, labels=labels, patch_artist=True, notch=False,
+        bp = ax.boxplot(data, patch_artist=True, notch=False,
                         medianprops=dict(color="white", linewidth=2))
 
         for patch, color in zip(bp["boxes"], colors):
             patch.set_facecolor(color)
             patch.set_alpha(_ALPHA)
 
+        ax.set_xticklabels(labels)
         ax.set_ylabel("Response Time (simulation units)", fontsize=12)
         ax.set_title("Dispatch Algorithm Spread Comparison", fontsize=14, fontweight="bold")
         ax.grid(True, axis="y", linestyle="--", alpha=0.4)
@@ -127,7 +128,7 @@ class ResponseTimeAnalysis:
         greedy_times: List[float],
         astar_times:  List[float],
         save_path:    Optional[str] = None,
-    ) -> plt.Figure:
+    ) -> Optional[Figure]:
         """
         IMPROVEMENT: Empirical CDF plot.
 
@@ -175,7 +176,7 @@ class ResponseTimeAnalysis:
         greedy_times: List[float],
         astar_times:  List[float],
         save_path:    Optional[str] = None,
-    ) -> plt.Figure:
+    ) -> Optional[Figure]:
         """
         IMPROVEMENT: per-emergency response time line chart.
 

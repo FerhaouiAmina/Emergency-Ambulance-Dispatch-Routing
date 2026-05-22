@@ -1,5 +1,8 @@
 from enum import Enum
 
+from src.core.depot_utils import depot_node_id
+
+
 class AmbulanceState(Enum):
     IDLE = 0  #free
     DISPATCHED = 1 #going to emergency
@@ -9,7 +12,7 @@ class AmbulanceState(Enum):
 class Ambulance:
     def __init__(self, id, start_node):
         self.id = id
-        self.current_node = start_node
+        self.current_node = depot_node_id(start_node)
         self.state = AmbulanceState.IDLE
 
         self.target_node = None  # where it is going
