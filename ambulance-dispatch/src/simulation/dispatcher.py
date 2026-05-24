@@ -61,9 +61,11 @@ class Dispatcher:
             em_data = self.graph.nodes.get(emergency_node)
             if em_data:
                 def euclidean(amb):
-                    nd = self.graph.nodes.get(amb.current_node, {})
-                    dx = nd.x - em_data.x if hasattr(nd, 'x') else 0
-                    dy = nd.y - em_data.y if hasattr(nd, 'y') else 0
+                    nd = self.graph.nodes.get(amb.current_node)
+                    if nd is None:
+                        return math.inf
+                    dx = nd.lon - em_data.lon
+                    dy = nd.lat - em_data.lat
                     return math.sqrt(dx * dx + dy * dy)
                 return min(available, key=euclidean)
 

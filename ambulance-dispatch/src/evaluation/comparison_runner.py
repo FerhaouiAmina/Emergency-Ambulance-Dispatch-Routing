@@ -2,50 +2,51 @@ import copy
 import math
 from typing import List, Optional, Callable
 
-from src.core.emergency import Emergency
-from src.core.ambulance import Ambulance, AmbulanceState
-from src.core.hospital import Hospital
+from src.core.ambulance import AmbulanceState
 from src.simulation.dispatcher import Dispatcher, ResponseLogger
+from src.evaluation.static_vs_dynamic import emergency_graph_node
 
 
 class DispatchExperiment:
     def __init__(self, ambulances, hospitals, emergencies,
-                 dispatcher, method="greedy", astar_fn=None):
-        self.ambulances  = ambulances
-        self.hospitals   = hospitals
+                 dispatcher, graph, method="greedy", astar_fn=None, edge_weights=None):
+        self.ambulances = ambulances
+        self.hospitals = hospitals
         self.emergencies = emergencies
-        self.dispatcher  = dispatcher
-        self.method      = method
-        self.astar_fn    = astar_fn
+        self.dispatcher = dispatcher
+        self.graph = graph
+        self.method = method
+        self.astar_fn = astar_fn
+        self.edge_weights = edge_weights
 
     def run(self):
+        from src.algorithms.astar_dispatch import astar_dispatch
+        from src.algorithms.greedy_dispatch import greedy_dispatch as greedy_fn
+
         logger = ResponseLogger()
         current_time = 0.0
 
         for event in self.emergencies:
             current_time = event.timestamp
-            emergency_node = getattr(event, "node", None)
+            emergency_node = emergency_graph_node(event, self.graph)
 
             if emergency_node is None:
                 continue
 
-            if self.method == "astar" and self.astar_fn is not None:
-                amb, path, cost = self.dispatcher.find_best_ambulance_astar(
-                    self.ambulances, emergency_node, self.astar_fn
+            if self.method == "astar":
+                result = astar_dispatch(
+                    self.ambulances, emergency_node, self.graph, self.edge_weights or {}
                 )
-                response_time = cost if cost != math.inf else (
-                    abs(amb.current_node - emergency_node) if amb else 9999.0
-                )
+                amb = result.ambulance
+                response_time = result.cost_to_scene if result.success else 9999.0
             else:
-                amb = self.dispatcher.find_nearest_ambulance(
-                    self.ambulances, emergency_node
+                result = greedy_fn(
+                    self.ambulances, emergency_node, self.graph, self.edge_weights
                 )
-                response_time = (
-                    abs(amb.current_node - emergency_node)
-                    if amb is not None else 9999.0
-                )
+                amb = result.ambulance
+                response_time = result.cost_to_scene if result.success else 9999.0
 
-            if amb is None:
+            if amb is None or not result.success:
                 logger.record(event.event_id, current_time,
                               current_time + 9999.0, method=self.method)
                 continue
@@ -53,6 +54,7 @@ class DispatchExperiment:
             arrival_time = current_time + response_time
             amb.state = AmbulanceState.DISPATCHED
             amb.current_node = emergency_node
+            amb.state = AmbulanceState.IDLE
             amb.state = AmbulanceState.IDLE
 
             logger.record(event.event_id, current_time,
@@ -62,34 +64,35 @@ class DispatchExperiment:
 
 
 class ComparisonRunner:
-    def __init__(self, base_ambulances, hospitals, emergencies, astar_fn=None):
+    def __init__(self, base_ambulances, hospitals, emergencies, graph, edge_weights=None):
         self.base_ambulances = base_ambulances
-        self.hospitals       = hospitals
-        self.emergencies     = emergencies
-        self.astar_fn        = astar_fn
-        self.greedy_logger   = None
-        self.astar_logger    = None
+        self.hospitals = hospitals
+        self.emergencies = emergencies
+        self.graph = graph
+        self.edge_weights = edge_weights or {eid: 1.0 for eid in graph.edges}
+        self.greedy_logger = None
+        self.astar_logger = None
 
     def run(self, verbose=True):
-        dispatcher = Dispatcher(graph=None)
+        dispatcher = Dispatcher(graph=self.graph)
 
         greedy_ambs = copy.deepcopy(self.base_ambulances)
         self.greedy_logger = DispatchExperiment(
             ambulances=greedy_ambs, hospitals=self.hospitals,
             emergencies=self.emergencies, dispatcher=dispatcher,
-            method="greedy", astar_fn=None,
+            graph=self.graph, method="greedy", edge_weights=self.edge_weights,
         ).run()
 
         astar_ambs = copy.deepcopy(self.base_ambulances)
         self.astar_logger = DispatchExperiment(
             ambulances=astar_ambs, hospitals=self.hospitals,
             emergencies=self.emergencies, dispatcher=dispatcher,
-            method="astar", astar_fn=self.astar_fn,
+            graph=self.graph, method="astar", edge_weights=self.edge_weights,
         ).run()
 
         results = {
             "greedy": self.greedy_logger.summary("greedy"),
-            "astar":  self.astar_logger.summary("astar"),
+            "astar": self.astar_logger.summary("astar"),
         }
 
         if verbose:
@@ -107,7 +110,7 @@ class ComparisonRunner:
         print("-" * w)
 
         greedy = results["greedy"]
-        astar  = results["astar"]
+        astar = results["astar"]
 
         for label, key in [
             ("Avg response time", "avg"),

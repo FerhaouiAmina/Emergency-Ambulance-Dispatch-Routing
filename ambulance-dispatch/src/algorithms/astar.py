@@ -31,7 +31,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 log = logging.getLogger(__name__)
-
+_ASTAR_CACHE = {}
 # ---------------------------------------------------------------------------
 # Type aliases
 # ---------------------------------------------------------------------------
@@ -325,18 +325,21 @@ def astar(
 # ---------------------------------------------------------------------------
 
 def astar_travel_time(
-    start:        NodeId,
-    goal:         NodeId,
+    start: NodeId,
+    goal: NodeId,
     graph,
     edge_weights: Optional[Dict[EdgeId, float]] = None,
 ) -> float:
-    """
-    Return only the optimal travel time (minutes) between two nodes.
-    Skips path-list allocation for callers that need only the scalar cost
-    (e.g. Hill Climbing fitness evaluation, dispatch scoring).
-    Returns math.inf if no path exists.
-    """
+
+    cache_key = (start, goal)
+
+    if cache_key in _ASTAR_CACHE:
+        return _ASTAR_CACHE[cache_key]
+
     _, cost = astar(start, goal, graph, edge_weights)
+
+    _ASTAR_CACHE[cache_key] = cost
+
     return cost
 
 
@@ -344,52 +347,108 @@ def astar_travel_time(
 # Fake A* helper (for M3 / M4 compatibility)
 # ---------------------------------------------------------------------------
 
-def fake_a_star(
-    a: NodeId,
-    b: NodeId,
-    traffic_multiplier: float = 1.0,
-    graph=None,
-) -> float:
-    """
-    Lightweight compatibility helper used by M3/M4 experiments.
+# def fake_a_star(
+#     a: NodeId,
+#     b: NodeId,
+#     traffic_multiplier: float = 1.0,
+#     graph=None,
+# ) -> float:
+#     """
+#     Lightweight compatibility helper used by M3/M4 experiments.
 
-    This is NOT real pathfinding.
-    It estimates travel time using straight-line (Haversine) distance only.
+#     This is NOT real pathfinding.
+#     It estimates travel time using straight-line (Haversine) distance only.
 
-    Parameters
-    ----------
-    a, b : NodeId
-        Start and end nodes.
+#     Parameters
+#     ----------
+#     a, b : NodeId
+#         Start and end nodes.
 
-    traffic_multiplier : float
-        Simulated traffic factor.
-        1.0 = free flow
-        2.0 = twice slower
-        math.inf = blocked / unreachable
+#     traffic_multiplier : float
+#         Simulated traffic factor.
+#         1.0 = free flow
+#         2.0 = twice slower
+#         math.inf = blocked / unreachable
 
-    graph : Graph
-        Graph instance containing nodes.
+#     graph : Graph
+#         Graph instance containing nodes.
 
-    Returns
-    -------
-    float
-        Estimated travel time in minutes.
-    """
+#     Returns
+#     -------
+#     float
+#         Estimated travel time in minutes.
+#     """
 
-    if graph is None:
-        return 1.0 * traffic_multiplier
+#     if graph is None:
+#         return 1.0 * traffic_multiplier
 
-    n1 = graph.nodes.get(a)
-    n2 = graph.nodes.get(b)
+#     n1 = graph.nodes.get(a)
+#     n2 = graph.nodes.get(b)
 
-    # Fallback if nodes are invalid / missing
-    if n1 is None or n2 is None:
-        try:
-            return abs(a - b) * 1.5 * traffic_multiplier
-        except Exception:
-            return 1.0 * traffic_multiplier
+#     # Fallback if nodes are invalid / missing
+#     if n1 is None or n2 is None:
+#         try:
+#             return abs(a - b) * 1.5 * traffic_multiplier
+#         except Exception:
+#             return 1.0 * traffic_multiplier
 
-    dist_km = _haversine_km(n1.lat, n1.lon, n2.lat, n2.lon)
+#     dist_km = _haversine_km(n1.lat, n1.lon, n2.lat, n2.lon)
 
-    # Convert km → minutes using FREE_FLOW_KMH
-    return (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier
+#     # Convert km → minutes using FREE_FLOW_KMH
+#     return (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier
+
+
+
+# # ---------------------------------------------------------------------------
+# # Fake A* helper (for M3 / M4 compatibility)
+# # ---------------------------------------------------------------------------
+
+# def fake_a_star(
+#     a: NodeId,
+#     b: NodeId,
+#     traffic_multiplier: float = 1.0,
+#     graph=None,
+# ) -> float:
+#     """
+#     Lightweight compatibility helper used by M3/M4 experiments.
+
+#     This is NOT real pathfinding.
+#     It estimates travel time using straight-line (Haversine) distance only.
+
+#     Parameters
+#     ----------
+#     a, b : NodeId
+#         Start and end nodes.
+
+#     traffic_multiplier : float
+#         Simulated traffic factor.
+#         1.0 = free flow
+#         2.0 = twice slower
+#         math.inf = blocked / unreachable
+
+#     graph : Graph
+#         Graph instance containing nodes.
+
+#     Returns
+#     -------
+#     float
+#         Estimated travel time in minutes.
+#     """
+
+#     if graph is None:
+#         return 1.0 * traffic_multiplier
+
+#     n1 = graph.nodes.get(a)
+#     n2 = graph.nodes.get(b)
+
+#     # Fallback if nodes are invalid / missing
+#     if n1 is None or n2 is None:
+#         try:
+#             return abs(a - b) * 1.5 * traffic_multiplier
+#         except Exception:
+#             return 1.0 * traffic_multiplier
+
+#     dist_km = _haversine_km(n1.lat, n1.lon, n2.lat, n2.lon)
+
+#     # Convert km → minutes using FREE_FLOW_KMH
+#     return (dist_km / FREE_FLOW_KMH) * 60.0 * traffic_multiplier

@@ -75,7 +75,7 @@ def plot_response_time_comparison(method_data, bins=20,
               fontsize=9, prop={"family": "monospace"})
 
     _add_summary_table(fig, method_data)
-    plt.tight_layout(rect=[0, 0.18, 1, 0.95])
+    plt.tight_layout(rect=(0, 0.18, 1, 0.95))
 
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches="tight",
@@ -176,7 +176,7 @@ def plot_hill_climbing_convergence(fitness_history, title="Hill Climbing Converg
               labelcolor=PALETTE["text"], fontsize=9,
               prop={"family": "monospace"})
 
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
 
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches="tight",

@@ -5,10 +5,10 @@
 # 
 import heapq
 import math
-from typing import Dict, Tuple, List, Callable, Any
+from typing import Dict, Tuple, List, Callable, Any, Optional
 
 # using A*
-from src.algorithms.astar import astar
+from src.algorithms.astar import astar, EdgeId
 
 
 class RealTimeAStar:
@@ -32,8 +32,8 @@ class RealTimeAStar:
 
     def __init__(
         self,
-        graph: Dict[Any, List[Tuple[Any, int]]],
-        edge_weights: Dict[int, float],
+        graph: Dict[Any, List[Tuple[Any, EdgeId]]],
+        edge_weights: Dict[EdgeId, float],
         heuristic: Callable,
         blocked_threshold: float = 1e6, #when road is physically unusable
         replan_threshold: float = 1.5,  # trigger if cost increases 50% ( road got 50% slower than it originally was)
@@ -110,7 +110,12 @@ class RealTimeAStar:
         best = math.inf
         best_next = current_node
 
-        for neighbor, edge_id in self.graph.get(current_node, []):
+        neighbors = (
+            self.graph.neighbors(current_node)
+            if hasattr(self.graph, "neighbors")
+            else self.graph.get(current_node, [])
+        )
+        for neighbor, edge_id in neighbors:
             w = self.edge_weights.get(edge_id, math.inf)
             h = self._lrta_heuristic(neighbor)
 
@@ -136,7 +141,7 @@ class RealTimeAStar:
 
     # TRAFFIC UPDATE
     def update_edge(self, edge_id: int, new_weight: float):
-        self.edge_weights[edge_id] = new_weight
+        self.edge_weights[str(edge_id)] = new_weight
 
 
     def apply_traffic_update(self, edge_id: int, new_weight: float, current_node):
@@ -186,6 +191,13 @@ class RealTimeAStar:
     def _recompute(self, current_node):
         #called both at start and whenever traffic forces a reroute
         #  it replans from current position not from the original start
+        # guard: goal must be defined for planning
+        if self.goal is None:
+            self.current_path = []
+            self.current_cost = math.inf
+            self.path_blocked = True
+            return
+
         path, cost = astar(
             current_node, self.goal, self.graph, self.edge_weights
         )
@@ -205,7 +217,12 @@ class RealTimeAStar:
 
 
     def _get_edge_id(self, u, v):
-        for neighbor, edge_id in self.graph[u]:
+        neighbors = (
+            self.graph.neighbors(u)
+            if hasattr(self.graph, "neighbors")
+            else self.graph.get(u, [])
+        )
+        for neighbor, edge_id in neighbors:
             if neighbor == v:
                 return edge_id
         return None
@@ -230,7 +247,8 @@ class RealTimeAStar:
 
         for i in range(len(remaining) - 1):
             edge_id = self._get_edge_id(remaining[i], remaining[i + 1])
-            total += self.edge_weights.get(edge_id, math.inf)
+            if edge_id is not None:
+                total += self.edge_weights.get(edge_id, math.inf)
 
         return total / speed
 
@@ -245,7 +263,7 @@ class RealTimeAStar:
         self,
         start,
         goal,
-        update_fn: Callable[[Dict[int, float]], None] = None,
+        update_fn: Optional[Callable[[Dict[EdgeId, float]], None]] = None,
         max_steps: int = 1000,
         use_lrta: bool = False
     ):
@@ -262,7 +280,6 @@ class RealTimeAStar:
 
             if update_fn:
                 update_fn(self.edge_weights)
-
             self.repair_path(current)
 
             if self.path_blocked:
@@ -278,9 +295,9 @@ class RealTimeAStar:
                 break
 
             edge_id = self._get_edge_id(current, next_node)
-            cost = self.edge_weights.get(edge_id, math.inf)
-
-            total_cost += cost
+            if edge_id is not None:
+                cost = self.edge_weights.get(edge_id, math.inf)
+                total_cost += cost
 
             current = next_node
             full_path.append(current)
@@ -291,6 +308,6 @@ class RealTimeAStar:
 
 
 
-  
+
 
 
