@@ -70,6 +70,9 @@ source .venv/bin/activate
 ---
 ## Running the Simulation
 ```
+pip install PyQt5 PyQtGraph PyQtWebEngine
+```
+```
 python map_animation.py --data data/map.json
 ```
 ---
