@@ -51,19 +51,19 @@ NB: it is recommended to be working with a linux cmd
 Clone the repository:
 ```
 git clone https://github.com/FerhaouiAmina/Emergency-Ambulance-Dispatch-Routing.git
-cd ambulance-dispatch
+```
+```
+cd Emergency-Ambulance-Dispatch-Routing && cd ambulance-dispatch
 ```
 Install dependencies:
 ```
 pip install -r requirements.txt
 ```
 if a message shows up it means you haven't activated a virtual environment:
-Create the environment:
 ```
 python -m venv .venv
 ```
 Note: you can replace the ".venv" with any name you want for your environment
-Activate it:
 ```
 source .venv/bin/activate
 ```
